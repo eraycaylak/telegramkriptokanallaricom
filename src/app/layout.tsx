@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#0f172a" />
+        <meta name="theme-color" content="#f8fafc" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} bg-slate-950 text-slate-100 antialiased`}>
+      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
         <Header />
         <main>{children}</main>
         <Footer />
