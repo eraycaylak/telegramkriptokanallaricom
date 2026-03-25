@@ -33,7 +33,13 @@ export default function KayitPage() {
     })
 
     if (error) {
-      setError(error.message)
+      if (error.message.toLowerCase().includes('rate limit')) {
+         setError('Çok fazla kayıt isteği gönderdiniz. Lütfen güvenlik sebebiyle bir süre bekleyip tekrar deneyiniz.')
+      } else if (error.message.toLowerCase().includes('already registered')) {
+         setError('Bu e-posta adresi zaten kayıtlı.')
+      } else {
+         setError(error.message)
+      }
       setLoading(false)
     } else {
       setSuccess(true)

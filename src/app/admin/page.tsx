@@ -11,7 +11,7 @@ type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle'
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('bekleyenler')
-  const [form, setForm] = useState({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
+  const [form, setForm] = useState({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr', logo_url: '', member_count: 0 })
   const [fetchingTg, setFetchingTg] = useState(false)
   const [addStatus, setAddStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [addError, setAddError] = useState('')
@@ -30,6 +30,12 @@ export default function AdminPage() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
       router.push('/giris')
+      return
+    }
+
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
+    if (profile?.role !== 'admin') {
+      router.push('/dashboard')
       return
     }
 
@@ -76,24 +82,27 @@ export default function AdminPage() {
   }
 
   const handleFetchData = async () => {
-    if (!form.telegram_url || (!form.telegram_url.includes('t.me') && !form.telegram_url.includes('@'))) {
+    let url = form.telegram_url.trim()
+    if (!url) {
       setAddError('Geçerli bir t.me linki girin.')
       return
     }
+    if (!url.startsWith('http') && !url.startsWith('@')) url = 'https://t.me/' + url
+    if (url.startsWith('@')) url = 'https://t.me/' + url.substring(1)
+
     setAddError('')
     setFetchingTg(true)
     try {
-      const res = await fetch('/api/telegram-fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: form.telegram_url })
-      })
+      const res = await fetch('/api/telegram-fetch?url=' + encodeURIComponent(url))
       const data = await res.json()
-      if (res.ok && data.name) {
+      if (res.ok && data.title) {
         setForm(prev => ({
           ...prev,
-          name: data.name,
-          description: data.description || prev.description
+          telegram_url: url,
+          name: data.title || prev.name,
+          description: data.description || prev.description,
+          logo_url: data.image || prev.logo_url,
+          member_count: data.memberCount || prev.member_count
         }))
       } else {
         setAddError(data.error || 'Veri çekilemedi. Kanal gizli olabilir.')
@@ -109,6 +118,8 @@ export default function AdminPage() {
     setAddStatus('loading')
     setAddError('')
 
+    const { data: { session } } = await supabase.auth.getSession()
+
     const { data: cat } = await supabase.from('categories').select('id').eq('slug', form.categorySlug).single()
     const slugBase = form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 60)
     const slug = `${slugBase}-${Date.now()}`
@@ -118,10 +129,18 @@ export default function AdminPage() {
       slug,
       description: form.description,
       telegram_url: form.telegram_url,
-      telegram_username: form.telegram_url.replace('https://t.me/', '').replace('@', ''),
+      telegram_username: form.telegram_url.replace('https://t.me/', '').replace('@', '').split('/')[0],
       category_id: cat?.id ?? null,
       language: form.language,
+      logo_url: form.logo_url,
+      member_count: form.member_count,
       is_approved: true,
+      is_featured: false,
+      is_premium: false,
+      votes: 0,
+      views: 0,
+      submitted_by: session?.user.id,
+      approved_at: new Date().toISOString(),
       last_verified_at: new Date().toISOString()
     })
 
@@ -130,7 +149,7 @@ export default function AdminPage() {
       setAddStatus('error')
     } else {
       setAddStatus('success')
-      setForm({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
+      setForm({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr', logo_url: '', member_count: 0 })
       fetchData()
       setTimeout(() => setAddStatus('idle'), 3000)
     }

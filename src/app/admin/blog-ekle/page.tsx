@@ -50,7 +50,7 @@ export default function AdminBlogEkle() {
         cover_image: form.cover_image,
         tags: tagsArray,
         author_id: user.id,
-        is_published: false
+        is_published: true
       })
 
     if (insertError) {

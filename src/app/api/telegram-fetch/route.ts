@@ -1,59 +1,55 @@
 import { NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const urlParam = searchParams.get('url')
+
+  if (!urlParam) {
+    return NextResponse.json({ error: 'URL is required' }, { status: 400 })
+  }
+
   try {
-    const { url } = await request.json()
-    if (!url) return NextResponse.json({ error: 'URL required' }, { status: 400 })
-
-    // parse username
-    let username = url.replace('https://t.me/', '').replace('http://t.me/', '').replace('@', '').split('/')[0]
-    if (!username) return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
-
-    // fetch public telegram preview
-    const res = await fetch(`https://t.me/s/${username}`)
-    const html = await res.text()
-
-    if (!html.includes('tgme_page_title')) {
-      return NextResponse.json({ error: 'Channel not found or private' }, { status: 404 })
+    const response = await fetch(urlParam, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    })
+    
+    if (!response.ok) {
+      return NextResponse.json({ error: 'Failed to fetch the URL' }, { status: response.status })
     }
 
-    // extract title
-    const titleMatch = html.match(/<div class="tgme_page_title"[^>]*>([\s\S]*?)<\/div>/)
-    let title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : ''
+    const html = await response.text()
 
-    // extract extra (subscribers)
-    const extraMatch = html.match(/<div class="tgme_page_extra">([\s\S]*?)<\/div>/)
-    let extra = extraMatch ? extraMatch[1].replace(/<[^>]+>/g, '').trim() : ''
-    
-    // subscribers example: "24.5K subscribers" or "1000 members"
-    let members = 0
-    if (extra.includes('subscriber') || extra.includes('member')) {
-      const numStr = extra.split(' ')[0].replace(/,/g, '')
-      if (numStr.includes('K')) {
-        members = parseFloat(numStr.replace('K', '')) * 1000
-      } else if (numStr.includes('M')) {
-        members = parseFloat(numStr.replace('M', '')) * 1000000
-      } else {
-        members = parseInt(numStr, 10)
+    // Basit RegEx matcher'lar ile veriyi HTML'den ayıklamak (Cheerio bağımlılığı olmadan)
+    const titleMatch = html.match(/<meta property="og:title" content="(.*?)">/)
+    const descMatch = html.match(/<meta property="og:description" content="(.*?)">/)
+    const imageMatch = html.match(/<meta property="og:image" content="(.*?)">/)
+    const extraMatch = html.match(/<div class="tgme_page_extra">(.*?)<\/div>/)
+
+    const title = titleMatch ? titleMatch[1] : ''
+    const description = descMatch ? descMatch[1] : ''
+    const image = imageMatch ? imageMatch[1] : ''
+    let memberCount = 0
+
+    if (extraMatch) {
+      const extraText = extraMatch[1].toLowerCase()
+      // Örn: "1,520 subscribers", "1 520 members" -> Rakamları alalım
+      if (extraText.includes('subscriber') || extraText.includes('member') || extraText.includes('abone') || extraText.includes('üye')) {
+         const numericOnly = extraText.replace(/\D/g, '')
+         if (numericOnly) {
+           memberCount = parseInt(numericOnly, 10)
+         }
       }
     }
 
-    // extract description
-    const descMatch = html.match(/<div class="tgme_page_description"[^>]*>([\s\S]*?)<\/div>/)
-    let description = descMatch ? descMatch[1].replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').trim() : ''
-
-    // extract avatar (tgme_page_photo_image)
-    const avatarMatch = html.match(/<img class="tgme_page_photo_image" src="([^"]+)"/)
-    let avatar = avatarMatch ? avatarMatch[1] : ''
-
     return NextResponse.json({
-      name: title,
-      subscribers: isNaN(members) ? 0 : Math.floor(members),
-      description: description,
-      avatar: avatar
+      title: title ? Buffer.from(title, 'latin1').toString('utf8') : '', // Bazı karakter kodlama tiplerini düzelt
+      description: description ? Buffer.from(description, 'latin1').toString('utf8') : '',
+      image,
+      memberCount
     })
-    
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch telegram data' }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
   }
 }

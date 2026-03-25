@@ -11,7 +11,7 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params)
   const supabase = createClient()
 
-  const [form, setForm] = useState({ name: '', telegram_url: '', description: '', category_id: '', language: 'tr', tags: '', votes: 0, views: 0 })
+  const [form, setForm] = useState({ name: '', telegram_url: '', description: '', category_id: '', language: 'tr', tags: '', votes: 0, views: 0, logo_url: '', member_count: 0 })
   const [categories, setCategories] = useState<{id: string, name: string}[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -42,6 +42,8 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
           tags: channelRes.data.tags ? channelRes.data.tags.join(', ') : '',
           votes: channelRes.data.votes || 0,
           views: channelRes.data.views || 0,
+          logo_url: channelRes.data.logo_url || '',
+          member_count: channelRes.data.member_count || 0,
         })
       } else {
         setError('Kanal bulunamadı.')
@@ -59,18 +61,25 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
 
     const tagsArray = form.tags.split(',').map(t => t.trim()).filter(t => t.length > 0)
     
+    // Telegram URL format fix
+    let url = form.telegram_url.trim()
+    if (!url.startsWith('http') && !url.startsWith('@')) url = 'https://t.me/' + url
+    if (url.startsWith('@')) url = 'https://t.me/' + url.substring(1)
+    
     const { error: updateError } = await supabase
       .from('channels')
       .update({
         name: form.name,
-        telegram_url: form.telegram_url,
-        telegram_username: form.telegram_url.replace('https://t.me/', '').replace('@', ''),
+        telegram_url: url,
+        telegram_username: url.replace('https://t.me/', '').replace('@', '').split('/')[0],
         description: form.description,
         category_id: form.category_id || null,
         language: form.language,
         tags: tagsArray,
         votes: form.votes,
         views: form.views,
+        logo_url: form.logo_url,
+        member_count: form.member_count,
         updated_at: new Date().toISOString()
       })
       .eq('id', resolvedParams.id)
@@ -110,7 +119,30 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
               <input value={form.name} onChange={(e) => setForm(p => ({...p, name: e.target.value}))} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telegram Linki</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex justify-between">
+                <span>Telegram Linki</span>
+                <button type="button" onClick={async () => {
+                  try {
+                    let u = form.telegram_url.trim();
+                    if (!u.startsWith('http') && !u.startsWith('@')) u = 'https://t.me/' + u;
+                    if (u.startsWith('@')) u = 'https://t.me/' + u.substring(1);
+                    const res = await fetch('/api/telegram-fetch?url=' + encodeURIComponent(u));
+                    if (res.ok) {
+                      const data = await res.json();
+                      setForm(p => ({
+                         ...p, 
+                         name: data.title || p.name, 
+                         description: data.description || p.description, 
+                         logo_url: data.image || p.logo_url, 
+                         member_count: data.memberCount || p.member_count 
+                      }));
+                      alert('Veriler başarıyla çekildi!');
+                    } else {
+                      alert('Veri çekilemedi. API hatası.');
+                    }
+                  } catch (e) { alert('Veri çekilemedi.'); }
+                }} className="text-xs text-blue-600 hover:underline">Verileri Çek</button>
+              </label>
               <input value={form.telegram_url} onChange={(e) => setForm(p => ({...p, telegram_url: e.target.value}))} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             </div>
             <div>
@@ -135,6 +167,14 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Görüntülenme</label>
               <input type="number" value={form.views} onChange={(e) => setForm(p => ({...p, views: Number(e.target.value)}))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kanal Logosu (URL)</label>
+              <input value={form.logo_url} onChange={(e) => setForm(p => ({...p, logo_url: e.target.value}))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Üye / Abone Sayısı</label>
+              <input type="number" value={form.member_count} onChange={(e) => setForm(p => ({...p, member_count: Number(e.target.value)}))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             </div>
           </div>
           
