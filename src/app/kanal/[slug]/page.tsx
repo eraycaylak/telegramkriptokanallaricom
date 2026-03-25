@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { ChannelWithCategory } from '@/lib/types'
 import Link from 'next/link'
 import ChannelCard from '@/components/ChannelCard'
-import { ThumbsUp, Eye, Users, ExternalLink, ArrowLeft, Crown, Star, Globe, Tag, Calendar } from 'lucide-react'
+import { ThumbsUp, Eye, Users, ChevronRight, ArrowLeft, Crown, Star, Globe, Tag, Calendar, ShieldCheck, HeartPulse, MessageSquareQuote, CheckCircle2 } from 'lucide-react'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!data) return { title: 'Kanal Bulunamadı' }
   const ch = data as ChannelWithCategory
   return {
-    title: `${ch.name} | Telegram Kripto Kanalı`,
-    description: ch.description ?? `${ch.name} Telegram kripto kanalı hakkında detaylı bilgi, üye sayısı, oylar ve kullanıcı yorumları.`,
+    title: ch.meta_title || `${ch.name} | Telegram Kripto Kanalı İncelemesi`,
+    description: ch.meta_description || ch.description || `${ch.name} telegram kanalı yorumları, güven skoru ve analiz detayları.`,
     openGraph: { title: ch.name, description: ch.description ?? '', type: 'website', url: `/kanal/${ch.slug}` },
     alternates: { canonical: `/kanal/${ch.slug}` },
   }
@@ -46,12 +46,22 @@ export default async function KanalDetayPage({ params }: Props) {
     .eq('category_id', ch.category_id)
     .neq('id', ch.id)
     .eq('is_approved', true)
-    .order('votes', { ascending: false })
+    .order('trust_score', { ascending: false })
     .limit(3)
 
   const relatedChannels = (relatedData ?? []) as ChannelWithCategory[]
 
-  // Increment views (fire and forget)
+  // Fetch Reviews
+  const { data: reviewsData } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('channel_id', ch.id)
+    .eq('is_approved', true)
+    .order('created_at', { ascending: false })
+    .limit(5)
+  const reviews = reviewsData || []
+
+  // Increment views
   supabase.rpc('increment_channel_views', { p_channel_id: ch.id }).then(() => {})
 
   const schemaData = {
@@ -59,6 +69,7 @@ export default async function KanalDetayPage({ params }: Props) {
     '@type': 'Product',
     name: ch.name,
     description: ch.description,
+    image: ch.logo_url || undefined,
     url: `https://www.telegramkriptokanallari.com/kanal/${ch.slug}`,
     aggregateRating: ch.votes > 0 ? {
       '@type': 'AggregateRating',
@@ -77,114 +88,202 @@ export default async function KanalDetayPage({ params }: Props) {
     ]
   }
 
+  const faqObj = ch.faq ? ch.faq : [
+      {
+        '@type': 'Question',
+        name: `${ch.name} kanalı güvenilir mi?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Bu kanal platformumuzda ${ch.trust_score || 80}/100 güven skoruna sahip olup, kullanıcı etkileşimine göre derecelendirilmiştir.`
+        }
+      },
+      {
+        '@type': 'Question',
+        name: `${ch.name} sinyalleri ücretsiz mi?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: ch.is_premium ? 'Yüksek oranda VIP üyeliğe dayalı veya Premium erişim gerektiren paylaşımları bulunmaktadır.' : 'Kanal genel olarak ücretsiz sinyal ve analiz paylaşımları yapmaktadır.'
+        }
+      }
+  ]
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqObj
+  }
+
   const initials = ch.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+  const avatarColors = ['bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-slate-800', 'bg-cyan-600']
+  const avatarColor = avatarColors[ch.name.charCodeAt(0) % avatarColors.length]
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-slate-600 mb-6">
-        <Link href="/" className="hover:text-slate-400 transition-colors">Ana Sayfa</Link>
+      <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium mb-6">
+        <Link href="/" className="hover:text-blue-600 transition-colors">Ana Sayfa</Link>
         <span>/</span>
-        <Link href="/kanallar" className="hover:text-slate-400 transition-colors">Kanallar</Link>
+        <Link href="/kanallar" className="hover:text-blue-600 transition-colors">Kanallar</Link>
         <span>/</span>
-        <span className="text-slate-400">{ch.name}</span>
+        <span className="text-slate-800 font-semibold">{ch.name}</span>
       </nav>
 
-      <div className="glass-card p-6 sm:p-8">
+      {/* Main Card */}
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
+        {/* Verification Strip Background effect */}
+        {ch.is_verified && (
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-500 to-emerald-400" />
+        )}
+
         {/* Header */}
-        <div className="flex items-start gap-5 mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-xl font-black text-white flex-shrink-0 shadow-xl">
-            {initials}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 text-center sm:text-left">
+          <div className={`w-24 h-24 rounded-2xl ${avatarColor} flex items-center justify-center text-3xl font-black text-white flex-shrink-0 shadow-md border border-slate-100 overflow-hidden`}>
+            {ch.logo_url ? <img src={ch.logo_url} alt={ch.name} className="w-full h-full object-cover" /> : initials}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h1 className="text-2xl font-black text-slate-100">{ch.name}</h1>
-              {ch.is_premium && <span className="badge badge-premium"><Crown className="w-3 h-3" /> Premium</span>}
-              {ch.is_featured && <span className="badge" style={{background:'rgba(234,179,8,0.15)',color:'#eab308',border:'1px solid rgba(234,179,8,0.25)'}}><Star className="w-3 h-3" /> Öne Çıkan</span>}
+            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3 mb-2">
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">{ch.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+                {ch.is_verified && <span className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm"><ShieldCheck className="w-3.5 h-3.5" /> Doğrulandı</span>}
+                {ch.is_premium && <span className="badge badge-premium"><Crown className="w-3.5 h-3.5" /> Premium</span>}
+                {ch.is_featured && <span className="badge bg-amber-50 text-amber-600 border border-amber-200"><Star className="w-3.5 h-3.5" /> Öne Çıkan</span>}
+              </div>
             </div>
-            {ch.categories && (
-              <Link href={`/kategori/${ch.categories.slug}`} className="badge badge-category text-xs">
-                {ch.categories.icon} {ch.categories.name}
-              </Link>
-            )}
+            
+            <div className="flex items-center justify-center sm:justify-start gap-3 flex-wrap text-sm text-slate-600">
+              {ch.categories && (
+                <Link href={`/kategori/${ch.categories.slug}`} className="font-semibold text-blue-600 flex items-center gap-1 hover:underline">
+                  {ch.categories.icon} {ch.categories.name}
+                </Link>
+              )}
+              <span className="text-slate-300">|</span>
+              <span className="flex items-center gap-1"><Globe className="w-4 h-4 text-slate-400" /> {ch.language === 'tr' ? '🇹🇷 Türkçe' : ch.language}</span>
+              {ch.last_verified_at && (
+                <>
+                  <span className="text-slate-300">|</span>
+                  <span className="flex items-center gap-1 text-emerald-600 font-medium">
+                    <CheckCircle2 className="w-4 h-4" /> 
+                    Son Kontrol: {new Date(ch.last_verified_at).toLocaleDateString('tr-TR')}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
-            { icon: <ThumbsUp className="w-4 h-4 text-violet-400" />, val: ch.votes, lbl: 'Oy' },
-            { icon: <Eye className="w-4 h-4 text-blue-400" />, val: ch.views.toLocaleString('tr-TR'), lbl: 'Görüntülenme' },
-            { icon: <Users className="w-4 h-4 text-emerald-400" />, val: ch.member_count ? (ch.member_count >= 1000 ? `${(ch.member_count/1000).toFixed(1)}K` : ch.member_count) : '-', lbl: 'Üye' },
+            { icon: <HeartPulse className="w-5 h-5 text-emerald-500" />, val: `${ch.trust_score || 85}/100`, lbl: 'Güven Skoru' },
+            { icon: <ThumbsUp className="w-5 h-5 text-blue-500" />, val: ch.votes, lbl: 'Organik Oy' },
+            { icon: <Eye className="w-5 h-5 text-slate-400" />, val: ch.views.toLocaleString('tr-TR'), lbl: 'Görüntülenme' },
+            { icon: <Users className="w-5 h-5 text-violet-500" />, val: ch.member_count ? (ch.member_count >= 1000 ? `${(ch.member_count/1000).toFixed(1)}K` : ch.member_count) : 'Gizli', lbl: 'Telegram Üye' },
           ].map((s) => (
-            <div key={s.lbl} className="bg-white/5 rounded-xl p-3 text-center">
-              <div className="flex justify-center mb-1">{s.icon}</div>
-              <div className="text-base font-bold text-slate-100">{s.val}</div>
-              <div className="text-xs text-slate-600">{s.lbl}</div>
+            <div key={s.lbl} className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-center">
+              <div className="flex justify-center mb-2">{s.icon}</div>
+              <div className="text-lg font-black text-slate-900">{s.val}</div>
+              <div className="text-xs text-slate-500 uppercase font-semibold mt-0.5">{s.lbl}</div>
             </div>
           ))}
         </div>
 
-        {/* Description */}
-        {ch.description && (
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-slate-400 mb-2">Açıklama</h2>
-            <p className="text-slate-300 leading-relaxed text-sm">{ch.description}</p>
+        {/* CTA */}
+        <div className="bg-blue-50 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 border border-blue-100">
+          <div>
+            <h3 className="font-bold text-blue-900 text-lg mb-1">Kanala Katıl ve Analizleri İncele</h3>
+            <p className="text-blue-700/80 text-sm font-medium">Telegram bağlantısına güvenli bir şekilde yönlendirileceksiniz.</p>
           </div>
-        )}
+          <Link
+            href={`/git/${ch.slug}`}
+            className="btn-primary w-full sm:w-auto px-10 py-4 text-base shadow-md hover:shadow-lg shrink-0"
+          >
+            Hemen Katıl <ChevronRight className="w-5 h-5" />
+          </Link>
+        </div>
 
-        {/* Tags */}
+      </div>
+
+      {/* Sponsor Banner Here */}
+      <div className="mt-8 mb-8">
+        <div className="w-full bg-slate-50 border border-slate-200 border-dashed rounded-xl h-24 flex items-center justify-center text-slate-400 text-xs font-semibold">
+          Sponsor Reklam Alanı (channel_detail)
+        </div>
+      </div>
+
+      {/* SEO ARTICLE BLOCK */}
+      <div className="mt-8 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 prose prose-slate max-w-none text-slate-600">
+        <h2 className="text-2xl font-black text-slate-900 !mt-0">{ch.name} Detaylı İncelemesi</h2>
+        <p className="text-lg font-medium leading-relaxed">
+          Kripto piyasasında kârlı işlemler yapabilmek ve doğru projelere erken erişim sağlayabilmek için güvenilir haber kaynaklarına ihtiyacınız vardır. <strong className="text-slate-900">{ch.name}</strong>, {ch.categories?.name ?? 'Kripto Para'} alanında faaliyet gösteren ve topluluğumuz tarafından {ch.trust_score || 85} güven skoru ile derecelendirilmiş aktif bir Telegram grubudur.
+        </p>
+        <p>
+          Sistemimizde organik olarak <strong className="text-slate-900">{ch.votes} beğeni</strong> alan bu mecra, şeffaflık (Win Rate paylaşımı) ve üye etkileşimi bakımından belirli kalite standartlarını yakalamış görünmektedir. {ch.is_premium ? 'VIP sinyal ağırlıklı çalışan bu topluluk, piyasadaki riskleri minimize etmeyi hedefleyen yatırımcılar için ideal olabilir.' : 'Ücretsiz ve herkesin erişimine açık spot/vadeli işlem analizleri yapan yöneticiler, kriptoya yeni başlayanlara da eğitici içerikler sunmaktadır.'} Yüksek volatiliteye sahip günlerde dahi, panik yapmadan grafik kırılımlarını aktarması, bu telegram kanalını değerli kılan ana etmenlerden biridir.
+        </p>
+        
         {ch.tags && ch.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="not-prose mt-6 flex flex-wrap gap-2">
+            <h4 className="w-full text-sm font-bold text-slate-900 mb-2">Kanal Uzmanlık Alanları:</h4>
             {ch.tags.map((tag: string) => (
-              <span key={tag} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-white/5 text-slate-500 border border-white/5">
+              <span key={tag} className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
                 <Tag className="w-3 h-3" /> {tag}
               </span>
             ))}
           </div>
         )}
+      </div>
 
-        {/* Meta */}
-        <div className="flex flex-wrap gap-4 text-xs text-slate-600 mb-6 border-t border-white/5 pt-5">
-          {ch.language && <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {ch.language === 'tr' ? '🇹🇷 Türkçe' : ch.language}</span>}
-          {ch.created_at && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(ch.created_at).toLocaleDateString('tr-TR')}</span>}
+      {/* FORUM / COMMUNITY DISCUSSION */}
+      <div className="mt-8 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
+              <MessageSquareQuote className="w-6 h-6 text-blue-600" /> Güvenilir Mi? (Topluluk Tartışması)
+            </h2>
+            <p className="text-slate-500 font-medium text-sm mt-1">Bu kanal hakkındaki gerçek yatırımcı deneyimleri ve şikayetler.</p>
+          </div>
+          <div className="hidden sm:flex text-right flex-col items-end">
+            <div className="text-3xl font-black text-slate-900">{ch.trust_score || 85} <span className="text-lg text-slate-400 font-semibold">/100</span></div>
+            <div className="text-xs font-bold text-emerald-600">Yüksek Güven</div>
+          </div>
         </div>
 
-        {/* CTA */}
-        <a
-          href={ch.telegram_url}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          className="btn-primary w-full justify-center text-base py-3"
-        >
-          <ExternalLink className="w-5 h-5" /> Telegram&apos;da Kanala Katıl
-        </a>
+        <div className="space-y-4">
+          {reviews.length > 0 ? (
+            reviews.map((rv) => (
+              <div key={rv.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="font-bold text-slate-900 flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">{(rv.user_name as string)[0].toUpperCase()}</div>
+                    {rv.user_name}
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">{new Date(rv.created_at).toLocaleDateString('tr-TR')}</span>
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">{rv.comment}</p>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-10 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+              <MessageSquareQuote className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <h3 className="text-slate-900 font-bold mb-1">Henüz Yorum Yapılmamış</h3>
+              <p className="text-slate-500 text-sm">İlk deneyimi siz paylaşın ve topluluğumuza rehberlik edin.</p>
+              <button className="mt-4 btn-secondary py-2 px-6 text-sm">Yorum Yap</button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* SEO ARTICLE BLOCK (Min 400 Words targeted dynamic injection) */}
-      <div className="mt-10 glass-card p-6 sm:p-8 prose prose-invert prose-sm max-w-none text-slate-400">
-        <h2 className="text-xl font-bold text-slate-200 !mt-0">{ch.name} İncelemesi ve Topluluk Analizi</h2>
-        <p>
-          Kripto para piyasalarında doğru zamanda doğru bilgiye erişmek, başarılı bir yatırım sürecinin temel taşıdır. İncelemekte olduğunuz <strong className="text-slate-200">{ch.name}</strong>, özellikle <strong className="text-slate-200">{ch.categories?.name ?? 'Kripto'}</strong> alanında faaliyet gösteren ve takipçilerine güncel içerikler sunmayı amaçlayan aktif bir Telegram kripto kanalıdır. Bu tür telegram kanalları, piyasadaki volatiliteden yararlanmak isteyen, grafik analizi veya temel analiz arayışında olan kripto yatırımcıları için vazgeçilmez bir kaynaktır. <strong className="text-slate-200">{ch.name}</strong> isimli telegram grubu da üyeleriyle etkileşime geçen, potansiyel fırsatları veya riskleri analiz eden popüler platformlardan biridir.
-        </p>
-        <p>
-          Bir kripto telegram grubuna (örneğin {ch.name}) katılırken dikkat etmeniz gereken bazı temel metrikler bulunmaktadır. Kanalın genel üye sayısı başlangıçta etkileyici görünse de, asıl önemli olan paylaşılan analizlerin veya sinyallerin isabetlilik oranıdır (Win Rate). Topluluğumuz tarafından sitemizde <strong className="text-slate-200">{ch.votes} beğeni (oy)</strong> alan bu kanal, organik bir kitle tarafından takibe değer bulunmuş ve popülaritesini ispatlamıştır. {ch.is_premium ? 'VIP abonelik modeliyle premium sinyaller veren bu platform' : 'Ücretsiz şekilde genele açık bilgi paylaşımı yapan bu platform'}, risk ödül (Risk/Reward) oranını gözeten profesyonel yatırımcılar için değerli bir tartışma/takip ortamı sunabilir. Kripto piyasasında ister günlük alım satım (day trade) yapın, ister uzun vadeli yatırımlar (hold) kovalayın, {ch.name} gibi aktif kanallar üzerinden gelen haber akışı işlemlerinize yön vermede size ekstra bir teyit (konfirmasyon) katabilir.
-        </p>
-        <h3 className="text-lg font-bold text-slate-300">Neden {ch.name} Grubunu Takip Etmeliyim?</h3>
-        <p>
-          Telegram grupları sadece "al-sat" sinyalleri vermekle kalmaz; aynı zamanda küresel makroekonomik gelişmeleri (FED kararları, SEC davaları, ETF onayları), blockchain ağlarındaki güncellemeleri (hard fork, mainnet) ve devasa airdrop fırsatlarını ilk elden duyururlar. {ch.name} gibi kanallar bu haberleri dakikalar içerisinde süzerek topluluğuna aktarır. Unutmamalısınız ki {ch.name} tarafından paylaşılan hiçbir içerik %100 kesin bir yatırım tavsiyesi içermez. Zarar kes (stop loss) kullanımı kripto ticaretinde zorunludur. Platformumuzda bu kanalın sayfasını takip eden on binlerce ziyaretçi gibi, siz de öncelikle kanalın geçmişteki performansını gözlemlemeli, paylaşılan analizlerin sizin risk toleransınızla örtüşüp örtüşmediğini tartmalısınız.
-        </p>
-      </div>
-
-      {/* BENZER KANALLAR (Internal Linking) */}
+      {/* BENZER KANALLAR */}
       {relatedChannels.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <Tag className="w-5 h-5 text-violet-400" /> Benzer Kanallar ({ch.categories?.name})
-          </h2>
+        <div className="mt-12 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
+               İlgili Sinyal Kanalları
+            </h2>
+          </div>
           <div className="grid gap-3">
             {relatedChannels.map(rc => (
               <ChannelCard key={rc.id} channel={rc} />
@@ -193,8 +292,8 @@ export default async function KanalDetayPage({ params }: Props) {
         </div>
       )}
 
-      <Link href="/kanallar" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 mt-10 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Tüm kanallara dön
+      <Link href="/kanallar" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 font-semibold transition-colors mt-6">
+        <ArrowLeft className="w-4 h-4" /> Dizin Ana Sayfasına Dön
       </Link>
     </div>
   )

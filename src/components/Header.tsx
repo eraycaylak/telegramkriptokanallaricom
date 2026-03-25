@@ -17,17 +17,16 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-white/5">
+    <header className="sticky top-0 z-50 glass border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-violet-500/50 transition-shadow">
+            <div className="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center shadow-md">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-base hidden sm:block">
-              <span className="gradient-text">KriptoKanal</span>
-              <span className="text-slate-400">.com</span>
+            <span className="font-extrabold text-lg text-slate-900 hidden sm:block tracking-tight">
+              TelegramKriptoKanallari
             </span>
           </Link>
 
@@ -37,7 +36,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-all font-medium"
+                className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:text-blue-700 hover:bg-slate-100 transition-all font-medium"
               >
                 {link.label}
               </Link>
@@ -46,17 +45,17 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            <Link href="/kanallar" className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+            <Link href="/kanallar" className="p-2 rounded-lg text-slate-500 hover:text-blue-700 hover:bg-slate-100 transition-all">
               <Search className="w-4 h-4" />
             </Link>
             <Link href="/giris" className="btn-secondary text-sm py-1.5 px-4 hidden sm:inline-flex">
-              Giriş Yap
+              Giriş
             </Link>
-            <Link href="/kayit" className="btn-primary text-sm py-1.5 px-4 hidden sm:inline-flex">
+            <Link href="/kayit" className="btn-primary text-sm py-1.5 px-4 hidden sm:inline-flex shadow-sm hover:shadow-md">
               Üye Ol
             </Link>
             <button
-              className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+              className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-blue-700 hover:bg-slate-100 transition-all"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -66,18 +65,18 @@ export default function Header() {
 
         {/* Mobile Nav */}
         {menuOpen && (
-          <div className="lg:hidden border-t border-white/5 py-3 space-y-1">
+          <div className="lg:hidden border-t border-slate-200 py-3 space-y-1 bg-white">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-all font-medium"
+                className="block px-4 py-3 rounded-lg text-sm text-slate-600 hover:text-blue-700 hover:bg-slate-50 transition-all font-medium"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex gap-2 pt-2 px-1">
+            <div className="flex gap-2 pt-2 px-4 shadow-sm pb-2">
               <Link href="/giris" className="btn-secondary text-sm py-2 flex-1 justify-center">Giriş</Link>
               <Link href="/kayit" className="btn-primary text-sm py-2 flex-1 justify-center">Üye Ol</Link>
             </div>

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import ChannelCard from '@/components/ChannelCard'
-import { ArrowRight, TrendingUp, Star, Zap, Shield, Users, BarChart2, ChevronRight } from 'lucide-react'
+import { ArrowRight, TrendingUp, Star, ShieldCheck, Zap, Users, Shield, MessageSquare, ChevronRight } from 'lucide-react'
 import { ChannelWithCategory, Category } from '@/lib/types'
 
 async function getData() {
@@ -47,72 +47,80 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden min-h-[520px] flex items-center">
-        {/* Glow blobs */}
-        <div className="hero-glow w-[500px] h-[500px] bg-violet-700/25 -top-32 -left-32" />
-        <div className="hero-glow w-[400px] h-[400px] bg-blue-700/20 -bottom-20 right-0" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-semibold">
-              <Zap className="w-3 h-3" /> Türkiye&apos;nin #1 Kripto Kanal Dizini
+      {/* HERO SECTION */}
+      <section className="bg-gradient-to-br from-slate-50 to-blue-50/50 border-b border-slate-200 overflow-hidden relative">
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-emerald-500" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center relative z-10">
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/50 border border-blue-200 text-blue-700 text-[11px] font-bold uppercase tracking-wide">
+              <ShieldCheck className="w-3.5 h-3.5" /> Doğrulanmış Kanallar
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-               Son Güncelleme: 25 Mart 2026
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-700 text-[11px] font-bold uppercase tracking-wide">
+               Son Güncelleme: {new Date().toLocaleDateString('tr-TR')}
             </div>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
-            <span className="gradient-text">Telegram Kripto</span>
-            <br />
-            <span className="text-slate-100">Kanalları</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.15] mb-6 tracking-tight">
+            Türkiye'nin En Güvenilir <br className="hidden sm:block" />
+            <span className="text-blue-700">Telegram Kripto Kanalları</span>
           </h1>
 
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-            En iyi Telegram kripto kanallarını keşfet. Bitcoin sinyalleri, Ethereum analizleri,
-            DeFi fırsatları ve ücretsiz kripto haberleri tek platformda.
+          <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
+            Gerçek kullanıcıların oyladığı, şeffaf metriklerle analiz edilmiş en iyi <strong className="text-slate-800 font-bold">Bitcoin sinyalleri</strong> ve altcoin haber gruplarını saniyeler içinde keşfedin. Bütün topluluklar uzman editörlerimiz tarafından her hafta denetlenmektedir.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/kanallar" className="btn-primary px-6 py-3 text-base">
-              Kanalları Keşfet <ArrowRight className="w-4 h-4" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/kanallar" className="btn-primary w-full sm:w-auto px-8 py-4 text-base sm:text-lg rounded-xl shadow-lg shadow-blue-600/20">
+              Kanalları Keşfet <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/kanal-ekle" className="btn-secondary px-6 py-3 text-base">
+            <Link href="/kanal-ekle" className="btn-secondary w-full sm:w-auto px-8 py-4 text-base sm:text-lg rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800">
               Kanal Ekle
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-6 mt-12 text-center">
+          {/* Core Trust Stats */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 mt-16 pb-4">
             {[
-              { icon: '📡', val: `${trending.length}+`, lbl: 'Aktif Kanal' },
-              { icon: '👥', val: '500K+', lbl: 'Toplam Üye' },
-              { icon: '✅', val: '100%', lbl: 'Doğrulanmış' },
-              { icon: '🆓', val: 'Ücretsiz', lbl: 'Erişim' },
-            ].map((s) => (
-              <div key={s.lbl} className="glass-card px-5 py-3 min-w-[110px]">
-                <div className="text-xl mb-1">{s.icon}</div>
-                <div className="text-lg font-black text-slate-100">{s.val}</div>
-                <div className="text-xs text-slate-500">{s.lbl}</div>
+              { label: 'Doğrulanan Grup', value: '1,500+' },
+              { label: 'Aylık Ziyaret', value: '75,000+' },
+              { label: 'Gerçek İnceleme', value: '25,000+' },
+              { label: 'Toplam Üye', value: '2M+' },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl sm:text-3xl font-black text-slate-900">{stat.value}</div>
+                <div className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 pb-20">
+      {/* SPONSOR HERO AD (home_hero) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <div className="w-full bg-slate-100 border border-slate-200 border-dashed rounded-2xl h-24 flex items-center justify-center text-slate-400 text-sm font-semibold">
+          [ Sponsor Reklam Alanı: Ana Sayfa Hero Altı (728x90) ]
+        </div>
+      </div>
 
-        {/* FEATURED */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 py-16">
+
+        {/* FEATURED CHANNELS */}
         {featured.length > 0 && (
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="section-title flex items-center gap-2"><Star className="w-6 h-6 text-amber-400" /> Öne Çıkan Kanallar</h2>
-              <Link href="/en-iyi-kanallar" className="flex items-center gap-1 text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                Tümü <ChevronRight className="w-4 h-4" />
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-3">
+              <div>
+                <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2 mb-1">
+                  <Star className="w-6 h-6 text-amber-500 fill-amber-500" /> Öne Çıkanlar (Sponsorlu)
+                </h2>
+                <p className="text-slate-500 text-sm">Topluluk kurallarını ihlal etmeyen ve özel sponsorluk sağlayan editör seçimleri.</p>
+              </div>
+              <Link href="/en-iyi-kanallar" className="btn-secondary py-2 px-4 text-sm shrink-0">
+                Tamamını Gör <ChevronRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
-            <div className="grid gap-3">
+            
+            <div className="grid lg:grid-cols-2 gap-4">
               {featured.map((ch, i) => (
                 <ChannelCard key={ch.id} channel={ch} rank={i + 1} />
               ))}
@@ -120,155 +128,122 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* CATEGORIES */}
+        {/* CATEGORIES GRID */}
         <section>
-          <h2 className="section-title mb-6">📂 Kategoriler</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/kategori/${cat.slug}`}
-                className="glass-card p-4 text-center group"
-              >
-                <div className="text-3xl mb-2">{cat.icon}</div>
-                <div className="font-bold text-sm text-slate-200 group-hover:text-violet-300 transition-colors">{cat.name}</div>
-                <div className="text-xs text-slate-600 mt-1">{cat.channel_count} kanal</div>
-              </Link>
-            ))}
-          </div>
+           <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popüler Kategoriler</h2>
+           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+             {categories.map((cat) => (
+               <Link
+                 key={cat.id}
+                 href={`/kategori/${cat.slug}`}
+                 className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:border-blue-400 hover:shadow-lg transition-all group flex flex-col items-center justify-center aspect-square"
+               >
+                 <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                   {cat.icon}
+                 </div>
+                 <div className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors line-clamp-1">{cat.name}</div>
+                 <div className="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">{cat.channel_count} kanal listeli</div>
+               </Link>
+             ))}
+           </div>
         </section>
 
-        {/* TRENDING */}
-        {trending.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="section-title flex items-center gap-2">
-                <TrendingUp className="w-6 h-6 text-orange-400" /> Trending Kanallar
-              </h2>
-              <Link href="/trending" className="flex items-center gap-1 text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                Tümü <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="grid gap-3">
-              {trending.slice(0, 5).map((ch, i) => (
-                <ChannelCard key={ch.id} channel={ch} rank={i + 1} />
-              ))}
-            </div>
-          </section>
-        )}
+        {/* TWO COLUMN: TRENDING vs NEWEST */}
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* TRENDING */}
+          {trending.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-3">
+                <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-orange-500" /> Trend Olanlar
+                </h2>
+                <Link href="/trending" className="text-sm text-blue-600 hover:text-blue-800 font-bold transition-colors">Tümü &rarr;</Link>
+              </div>
+              <div className="flex flex-col gap-3">
+                {trending.slice(0, 5).map((ch, i) => (
+                  <ChannelCard key={ch.id} channel={ch} rank={i + 1} />
+                ))}
+              </div>
+            </section>
+          )}
 
-        {/* NEWEST */}
-        {newest.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="section-title flex items-center gap-2">
-                <Zap className="w-6 h-6 text-blue-400" /> Yeni Eklenen Kanallar
-              </h2>
-              <Link href="/yeni-kanallar" className="flex items-center gap-1 text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                Tümü <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {newest.map((ch) => (
-                <ChannelCard key={ch.id} channel={ch} />
-              ))}
-            </div>
-          </section>
-        )}
+          {/* NEWEST */}
+          {newest.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-3">
+                <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-blue-500" /> Yeni Doğrulananlar
+                </h2>
+                <Link href="/yeni-kanallar" className="text-sm text-blue-600 hover:text-blue-800 font-bold transition-colors">Tümü &rarr;</Link>
+              </div>
+              <div className="flex flex-col gap-3">
+                {newest.slice(0, 5).map((ch) => (
+                  <ChannelCard key={ch.id} channel={ch} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
 
-        {/* WHY US */}
-        <section className="glass-card p-8">
-          <h2 className="section-title text-center mb-8">Neden Biz?</h2>
-          <div className="grid sm:grid-cols-3 gap-6">
+        {/* TRUST BADGES SECTION */}
+        <section className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-2xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-[80px]" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/20 rounded-full filter blur-[80px]" />
+          
+          <div className="relative z-10 text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-black mb-4">Gerçek Veri, Gerçek Topluluk</h2>
+            <p className="text-slate-400 font-medium leading-relaxed">Dizinimizde sadece organik kullanıcı deneyimi ile kanıtlanmış kripto telegram gruplarına yer veririz. Robot botlara veya spam sinyal akışlarına sıfır tolerans uygularız.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6 relative z-10">
             {[
-              { icon: <Shield className="w-6 h-6 text-emerald-400" />, title: 'Doğrulanmış Kanallar', desc: 'Her kanal manuel inceleme sürecinden geçer, sahte ve zararlı kanallar anında kaldırılır.' },
-              { icon: <BarChart2 className="w-6 h-6 text-blue-400" />, title: 'Gerçek İstatistikler', desc: 'Üye sayıları, oy ve değerlendirmelerle kanalları objektif karşılaştır.' },
-              { icon: <Users className="w-6 h-6 text-violet-400" />, title: 'Topluluk Odaklı', desc: 'Kullanıcılar oy vererek ve yorum yaparak en iyi kanalları öne çıkarır.' },
+              { icon: <Shield className="w-8 h-8 text-emerald-400" />, title: '%100 Manuel Doğrulama', desc: 'Sisteme eklenen her telegram linkini admin kadromuz bizzat inceler.' },
+              { icon: <MessageSquare className="w-8 h-8 text-blue-400" />, title: 'Şeffaf Yorum Sistemi', desc: '"Güvenilir Mi?" başlığında kullanıcıların dürüst puanlamalarını paylaşıyoruz.' },
+              { icon: <Users className="w-8 h-8 text-violet-400" />, title: 'Doğal Güven Skoru', desc: 'Kanallar üye sayısından çok, aldıkları şikayetler/beğeniler (Trust Score) oranına göre sıralanır.' },
             ].map((item) => (
-              <div key={item.title} className="text-center">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3">{item.icon}</div>
-                <h3 className="font-bold text-slate-200 mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+              <div key={item.title} className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mb-4 shadow-inner border border-slate-700">{item.icon}</div>
+                <h3 className="font-bold text-lg mb-2 text-white">{item.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">{item.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* SEO CONTENT BLOCK & FAQ */}
-        <section className="prose prose-invert prose-sm max-w-none">
+        {/* LONG SEO TEXT + FAQ (Trustpilot-like plain clean formatting) */}
+        <section className="prose prose-slate max-w-none text-slate-700 bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-sm">
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
           
-          <div className="glass-card p-6 sm:p-10 space-y-8 text-slate-400 leading-loose text-sm sm:text-base">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-100 mb-4">En İyi Telegram Kripto Kanalları 2026: Tam Kapsamlı Başarı Rehberi</h2>
-              <p className="mb-4">
-                Kripto para piyasası (kripto endüstrisi) sadece hız ve ivmeyle değil, bilgi hızıyla hareket eden bir ekosistemdir. Dünyanın en gelişmiş projesi veya en büyük paritedeki kırılım dahi, doğru strateji olmadan kazanç sağlamaz. Tam bu noktada devreye dünyanın tartışılamaz bir numaralı bilgi akışı platformlarından olan <strong className="text-slate-300">Telegram kripto kanalları</strong> girer. Türkiye'de ve dünyada her gün binlerce trader, Telegram üzerindeki özel alfa gruplarında işlem fırsatlarına herkesten önce ulaşır. Bu dijital ağ; teknik kırılımlardan anlık FOMO tetikleyicilerine, dev projelerin airdrop görevlerinden özel whitelist fırsatlarına kadar her metrikte yatırımcının bir numaralı kalkanıdır. Bizim kurduğumuz en gelişmiş ve tarafsız dizin sayesinde sahtekâr, bot basılmış dolandırıcı gruplardan korunarak, en isabetli ve dürüst Telegram kriptolarını saniyeler içinde keşfedebiliyorsunuz.
-              </p>
-              <p>
-                2026 yılı, kripto piyasasında spot (uzun vadeli tutma) ve futures (kaldıraçlı işlem) arasındaki uçurumu daha da artırmış, makroekonomik faiz etkileri ile sert volatalitelere yol açmıştır. Kendi analiz yeteneğinize güvenseniz dahi profesyonel bir <strong className="text-slate-300">Telegram Kripto Kanalı</strong> size çok farklı bir bakış açısı sunabilir. İhtiyacınız olan şey sadece grafikteki üçgenin kırılımı değil, devasa zincir üstü (on-chain) balina cüzdanlarının hangi token'a yöneldiğini analiz edebilen vizyoner ekiplere katılmaktır. Listemizde görebileceğiniz üzere, biz sizin için tüm telegram kripto ekosistemini filtreledik.
-              </p>
-            </div>
+          <h2 className="text-3xl font-black text-slate-900 mb-6">En İyi Telegram Kripto Kanalları 2026: Tam Kapsamlı Başarı Rehberi</h2>
+          <p className="font-medium text-slate-600 leading-relaxed text-lg mb-6">
+             Kripto para endüstrisi hızla değişirken, anlık fiyat hareketlerini, son dakika Bitcoin sinyallerini ve major airdrop listelemelerini saniyeler içerisinde elde edebilmeniz ancak dünyanın en güçlü alfa grupları olan <strong>Telegram kripto kanalları</strong> ile mümkündür. Doğru bir Telegram kanalını takip etmek portföyünüzün büyümesini kolaylaştırırken, botlu, organik olmayan scam (dolandırıcılık) kanalları ise sizi likidite (sıfırlanma) noktasına iter.
+          </p>
+          <p>
+            Listemizde yer alan tüm Türk ve Global Kripto grupları, editörlerimizin incelemesinden (KYC/Doğrulama aşaması) geçerek <strong>"Güven Skoru (Trust Score)"</strong> metriklerine tabi tutulmuştur. Bu skor tamamen kanalın geçmiş aylar içindeki sinyal başarı oranına (Win Rate) ve topluluğumuzdan topladığı "Benzer Kanallar" teyitlerine dayanır. Hiçbir zaman kaldıraçlı piyasalarda %100 kazanç garantisi bulunmaz; bu yüzden <strong>ücretsiz telegram kripto kanalları</strong> üzerinden alacağınız yatırım bilgilerini mutlaka ve öncelikle Stop Loss (zarar kesme) prensipleriyle risk havuzunuzda eritmeyi unutmayın.
+          </p>
 
-            <div>
-              <h2 className="text-2xl font-black text-slate-100 mb-4">Telegram Sinyal Kanalları İle Profesyonel Trade</h2>
-              <p className="mb-4">
-                Profesyonel bir <strong className="text-slate-300">Telegram sinyal kanalı</strong>, asla ama asla garantili zenginlik vaat etmez. Profesyoneller bilir ki piyasanın %100 tahmini yapılamaz. Ancak "risk minimizasyonu ve R/R (Risk/Reward) oranı" stratejileriyle, bir trade kaybedilse bile uzun vadede cüzdan bakiyesinin artması sağlanır. Listelediğimiz lider telegram sinyal kanalları, işlem setup'ını size atarken net bir Entry (Giriş) seviyesi, Take Profit 1-2-3 (Kar Alım Hedefleri) ve mutlaka Stop Loss (Zarar Kes) seviyesi sunar. Bu temel kurala uymayan "Yükselecek alın!" diyen hiçbir kanal, dizinimizdeki elit seviye veya popüler sıralamalarda yer bulamaz. Topluluk oylamalarımız tamamen şeffaf ve gerçektir.
-              </p>
-              <p>
-                Sinyal takip ederken özellikle Binance, OKX veya Bybit gibi borsalardaki marjin (kaldıraçlı) seviyelere dikkat etmeli; izole ve çapraz marjin kavramlarına hâkim olmadan, sırf bir gruptan sinyal geldi diye sermayenizin tamamıyla (All in) işlem açmamalısınız. Gerçek <strong>türk telegram kripto kanalları</strong> çoğu zaman size piyasa eğitimini, piyasa psikolojisinin nasıl okunacağını, RSI, MACD, Fibonacci, likidite avı ve order block (OB) yapılarını öğretmeyi de misyon edinirler.
-              </p>
-            </div>
+          <h3 className="text-xl font-bold mt-8 mb-4">Telegram Sinyal Kanalları Ne Kadar Şeffaf?</h3>
+          <p>
+            Kripto dünyasında en önemli olgu dürüstlüktür. Sinyal kanallarını listelerken onlardan belirli günlerde zarar ettikleri, stop oldukları tabloları da açıkça (şeffaflık dökümü) toplulukla paylaşmalarını bekleriz. Spot alımlar için verilen Coin tavsiyelerinde temel analizlerin, zincir üstü (on-chain) metriklerin desteklendiği kaliteli grupları filtreleyerek size en temiz platformu yaratıyoruz.
+          </p>
 
-            <div>
-              <h2 className="text-2xl font-black text-slate-100 mb-4">Ücretsiz Telegram Kanalları ve Bilgi Kaynakları</h2>
-              <p className="mb-4">
-                Özellikle kripto evreninde yeni bir balıksanız, binlerce dolar ücret ödeyerek VIP kapalı gruplara girmek yerine çok kaliteli, dürüst ve isabetli <strong>ücretsiz telegram kripto kanalları</strong> ile yola çıkmanızı şiddetle tavsiye ederiz. Dizinimizde yer alan bu ücretsiz platformlarda her sabah piyasa yönüne dair güncel bir özet bülteni sesli anons veya mesaj şeklinde gönderilir. En önemli airdropların testnet (test ağı yapılandırması) görev süreçleri, tamamen ücretsiz kanallar tarafından paylaşılarak sermayesiz bir şekilde binlerce dolar havadan token kazanmanızın da önünü açarlar. Kimi zaman bu gruplardaki ücretsiz ve karşılıksız bilgi, piyasadaki çoğu premium influencerın paralı servisinden daha saf ve değerlidir. 
-              </p>
-              <p>
-                Ücretsiz grupları incelediğimizde bunların gelirlerini genellikle borsa (exchange) ref linklerinden veya reklamcılıktan elde ettiklerini görüyoruz. Bu ticari model tamamen yasal ve etiktir. Asıl olan tek kural, kanal yöneticisinin size fayda sağlamaya devam etmesi ve topluluğunu korumasıdır. Listemizde "Ücretsiz" veya "Sinyal" gibi özel kategorileri tıklayarak bu grupları kolayca keşfedebilirsiniz.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-black text-slate-100 mb-4">Güvenilir Telegram Kanalları Nasıl Anlaşılır?</h2>
-              <p className="mb-4">
-                Sürekli genişleyen ve büyüyen kripto sektörünün en büyük dezavantajı maalesef "scam" (dolandırıcılık) olaylarıdır. Piyasaya giren her bilinçsiz yatırımcı, kolay yoldan milyoner olacağını zannedip asılsız "garantili x100 yapan Pump gruplarının" tuzaklarına çekilir. Gerçek ve <strong>güvenilir telegram kanalları</strong>, "Pump & Dump" isimli yasadışı fiyat manipülasyonundan tamamiyle uzaktır. Bir telegram grubunun kalitesini şuradan anlarsınız: Zarar edebilirler, stop olabilirler ancak şeffaf bir şekilde o grafik neden patladı ve zararla çıkıldı diye durum analizi geçerler. Sizden sadece Telegram üzerinden "Kripto bakiyeni ikiye katlayıp geri göndereceğim, paranızı bu cüzdana atın" diyen yöneticilerden koşarak kaçmalısınız; dizin platformumuzda sahte isim, kopya profil kullanarak dolandırıcılık hedefleyen kişilere sıfır toleransla yaklaşılır, bildirildiğinde derhal "SCAM" tespitiyle banlanırlar.
-              </p>
-              <p>
-                Platformumuzda kanal detayına girildiğinde "Oylama (Vote)" sistemi bulunur. İşte bu oylama sistemi, hangi telegram kripto grubunun topluluğunun arkasında durduğunu anında ölçer. Popüler olan her zaman kaliteli demek değildir ancak on binlerce organik takipçinin yüksek oyu ile zirveye tırmanmış bir Telegram grubu kesinlikle değerli bilgiler sunuyordur. Türkçe Kripto yayıncılığı yapan ve on binlerce kişiye yol gösteren yerel analistlerden, en global haber kaynaklarına kadar devasa bilgi deposu, hemen yukarıdaki kanallar sekmesinde bir tık uzağınızda!
-              </p>
-            </div>
-            
-            <hr className="border-white/10 my-8" />
-            
-            <div className="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
-              <h3 className="text-xl font-bold text-slate-100 mb-6">Sıkça Sorulan Sorular (FAQ)</h3>
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-bold text-slate-200 mb-2">Telegram kripto kanalları nedir?</h4>
-                  <p className="text-sm">Telegram kripto kanalları, kripto para piyasaları hakkında teknik analiz, temel analiz, alım-satım sinyalleri ve güncel haberler paylaşılan küresel ve yerel Telegram topluluklarıdır. Hem yeni hem de profesyonel traderlar için piyasanın anlık nabzını tutma imkanı sağlar.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-200 mb-2">En iyi telegram kanalları hangileri?</h4>
-                  <p className="text-sm">En iyi telegram kripto kanalları kişisel trade stratehinize (Day trading, Swing trading, Hold) göre değişmekle birlikte; platformumuzda onaylanmış, düzenli paylaşımlar yapan ve kullanıcı oylarıyla Top listelerinde liderliğini koruyan kanallardır.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-200 mb-2">Telegram sinyal kanalları güvenilir mi?</h4>
-                  <p className="text-sm">Tüm telegram sinyal kanalları güvenilir diyemeyiz. Gerçekten güvenilir olanlar şeffaf işlem geçmişlerini paylaşan, risk yönetimine odaklanan ve asılsız vaatlerde bulunmayan gruplardır. Sitemizdeki oylama sistemimiz, sahte kanallardan korunmanıza yardımcı olur.</p>
-                </div>
+          <hr className="my-10 border-slate-200" />
+          
+          <h3 className="text-2xl font-black text-slate-900 mb-6">Sıkça Sorulan Sorular (FAQ)</h3>
+          <div className="space-y-4 not-prose">
+            {[
+              { q: 'Telegram kripto kanalları nedir?', a: 'Telegram kripto kanalları, kripto piyasaları hakkında teknik analiz, temel analiz, alım-satım sinyalleri ve güncel makro-ekonomik (FED faiz, SEC onayı) haberlerin paylaşıldığı kapalı veya açık haber topluluklarıdır.' },
+              { q: 'En iyi telegram kanalları hangileri?', a: 'En iyi telegram kripto kanalları kişisel risk algoritmanıza göre değişmekle birlikte; sitemizde yer alan "Trust Score" puanı 80 ve üzeri olan, onay rozetine (Verified) sahip, topluluk yorumlarında pozitif dönüş alan "Öne Çıkanlar" sayfasındaki listelerdir.' },
+              { q: 'Telegram sinyal kanalları güvenilir mi?', a: 'Sinyaller asla mutlak gerçekliği yansıtmaz. Kripto doğası gereği yüksek oynaklık içeren spekülatif bir piyasadır. Güvenilir bir kanal her zaman Take-Profit (Kar al) ve Stop-Loss (Zarar kes) lokasyonlarıyla işlemi sigortalar ve "Risk/Ödül" oranındaki isabetliliğini şeffaf ispatlar.' }
+            ].map((faq, i) => (
+              <div key={i} className="bg-slate-50 border border-slate-200 p-5 rounded-xl">
+                <h4 className="font-bold text-slate-900 mb-2">{faq.q}</h4>
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">{faq.a}</p>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="text-center py-8">
-          <h2 className="text-2xl font-bold text-slate-100 mb-3">Kanalınızı Ekleyin</h2>
-          <p className="text-slate-500 mb-6 text-sm">100.000&apos;den fazla kripto yatırımcısına ulaşın</p>
-          <Link href="/kanal-ekle" className="btn-primary px-8 py-3 text-base">
-            Ücretsiz Kanal Ekle <ArrowRight className="w-4 h-4" />
-          </Link>
-        </section>
       </div>
     </>
   )

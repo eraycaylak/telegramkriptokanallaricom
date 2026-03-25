@@ -40,6 +40,15 @@ export interface Database {
           approved_at: string | null
           created_at: string
           updated_at: string
+          is_verified: boolean
+          is_sponsor: boolean
+          last_verified_at: string | null
+          last_updated_at: string | null
+          meta_title: string | null
+          meta_description: string | null
+          faq: any | null
+          trust_score: number
+          trending_score: number
         }
         Insert: Omit<Database['public']['Tables']['channels']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['channels']['Insert']>
