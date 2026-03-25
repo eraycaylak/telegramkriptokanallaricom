@@ -6,12 +6,12 @@ async function updateAuth() {
   const htmlContent = fs.readFileSync('C:\\Users\\ERAY\\.gemini\\antigravity\\brain\\27fe545e-e6cc-4a1a-a7cd-fef543453116\\email_template.html', 'utf8');
 
   const body = {
-    "smtp_admin_email": "telegramkanaliiletisim@outlook.com",
-    "smtp_host": "smtp-mail.outlook.com",
-    "smtp_port": "587",
-    "smtp_user": "telegramkanaliiletisim@outlook.com",
-    "smtp_pass": "Dominik99-+()ERAY",
-    "smtp_sender_name": "TelegramKripto Kanalları",
+    "smtp_admin_email": null,
+    "smtp_host": null,
+    "smtp_port": null,
+    "smtp_user": null,
+    "smtp_pass": null,
+    "smtp_sender_name": null,
     "mailer_subjects_confirmation": "Aramıza Hoş Geldiniz! Hesabınızı Onaylayın",
     "mailer_templates_confirmation_content": htmlContent
   };

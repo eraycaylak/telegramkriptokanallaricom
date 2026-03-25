@@ -38,6 +38,9 @@ export const metadata: Metadata = {
       'tr-TR': 'https://www.telegramkriptokanallari.com',
     }
   },
+  verification: {
+    google: 'Kr4w4oEeySH3q8X0a45RYM_8TU-KODKguUNnT38nF4o',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
