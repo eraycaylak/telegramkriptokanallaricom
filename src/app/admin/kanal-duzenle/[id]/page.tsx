@@ -100,7 +100,7 @@ export default function AdminKanalDuzenle({ params }: { params: Promise<{ id: st
         <ArrowLeft className="w-4 h-4" /> Admin Paneline Dön
       </Link>
       
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-10 mb-8">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-10 mb-8 max-w-full overflow-hidden">
         <div className="mb-6 border-b border-slate-100 pb-4">
           <h1 className="text-2xl font-black text-slate-900">Kanalı Düzenle</h1>
           <p className="text-slate-500 text-sm mt-1">Kanal ID: {resolvedParams.id}</p>

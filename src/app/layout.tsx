@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
+      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased overflow-x-hidden w-full max-w-[100vw]`}>
         <Header />
         <main>{children}</main>
         <Footer />

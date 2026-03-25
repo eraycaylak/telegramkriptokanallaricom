@@ -43,9 +43,18 @@ export async function GET(request: Request) {
       }
     }
 
+    function decodeHTMLEntities(text: string) {
+      return text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+                 .replace(/&quot;/g, '"')
+                 .replace(/&amp;/g, '&')
+                 .replace(/&lt;/g, '<')
+                 .replace(/&gt;/g, '>')
+                 .replace(/&#39;/g, "'");
+    }
+
     return NextResponse.json({
-      title: title ? Buffer.from(title, 'latin1').toString('utf8') : '', // Bazı karakter kodlama tiplerini düzelt
-      description: description ? Buffer.from(description, 'latin1').toString('utf8') : '',
+      title: title ? decodeHTMLEntities(title) : '',
+      description: description ? decodeHTMLEntities(description) : '',
       image,
       memberCount
     })
