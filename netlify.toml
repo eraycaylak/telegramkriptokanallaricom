@@ -1,16 +1,3 @@
 [build]
   command = "npm run build"
   publish = ".next"
-
-[build.environment]
-  NEXT_PUBLIC_SUPABASE_URL = "https://bmvnmlbfozulqflkgdns.supabase.co"
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtdm5tbGJmb3p1bHFmbGtnZG5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NTM5ODIsImV4cCI6MjA5MDAyOTk4Mn0.vdZ0VDjOf2vSD249z72wFkjN7-6eqVFFaNQWoaDX7Ys"
-  NEXT_PUBLIC_SITE_URL = "https://www.telegramkriptokanallari.com"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
