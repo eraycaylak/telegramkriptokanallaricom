@@ -20,6 +20,7 @@ export default function AdminPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [users, setUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
   const [stats, setStats] = useState({ total: 0, pending: 0, blogs: 0, users: 0 })
   const router = useRouter()
 
@@ -38,6 +39,7 @@ export default function AdminPage() {
       router.push('/dashboard')
       return
     }
+    setAuthChecked(true)
 
     const [chRes, pendRes, blogRes, usrRes] = await Promise.all([
       supabase.from('channels').select('*').eq('is_approved', true).order('created_at', { ascending: false }).limit(50),
@@ -386,6 +388,7 @@ export default function AdminPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-extrabold text-slate-900 text-sm">{user.display_name ?? user.username}</p>
                     <p className="text-xs text-slate-500 font-medium mt-0.5">@{user.username}</p>
+                    {(user as any).email && <p className="text-xs text-blue-500 font-mono mt-0.5">{(user as any).email}</p>}
                   </div>
                   <span className={`badge text-[10px] px-2 py-0.5 ${user.role === 'admin' ? 'bg-violet-100 text-violet-700 border border-violet-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>{user.role}</span>
                 </Link>

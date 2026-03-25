@@ -10,6 +10,7 @@ export default function KayitPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
+  const [telegramUsername, setTelegramUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -27,7 +28,8 @@ export default function KayitPage() {
       password,
       options: {
         data: {
-          username: username.toLowerCase().replace(/[^a-z0-9_]/g, '')
+          username: username.toLowerCase().replace(/[^a-z0-9_]/g, ''),
+          telegram_username: telegramUsername.replace(/^@/, '').toLowerCase()
         }
       }
     })
@@ -127,6 +129,25 @@ export default function KayitPage() {
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               placeholder="••••••••"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telegram Kullanıcı Adı</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">@</span>
+              <input
+                type="text"
+                name="telegram_username"
+                value={telegramUsername}
+                onChange={(e) => setTelegramUsername(e.target.value.replace(/^@/, ''))}
+                required
+                autoComplete="off"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                placeholder="telegram_adiniz"
+              />
+            </div>
+            <p className="text-[11px] text-amber-600 font-semibold mt-1.5 flex items-center gap-1">
+              ⚠️ Telegram kullanıcı adınızı yanlış girerseniz kanalınız yayına alınmaz.
+            </p>
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3 text-base shadow-md mt-2">
             {loading ? 'Kayıt Olunuyor...' : 'Hemen Kayıt Ol'}
