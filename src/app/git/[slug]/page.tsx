@@ -64,12 +64,7 @@ export default async function RedirectPage({ params }: Props) {
           </Link>
         </div>
 
-        {/* Client-side auto redirect script */}
-        <script dangerouslySetInnerHTML={{__html: `
-          setTimeout(function() {
-            window.location.href = "${data.telegram_url}";
-          }, 3000);
-        `}} />
+        {/* Progress simulation styles */}
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes progress {
             from { width: 0%; }

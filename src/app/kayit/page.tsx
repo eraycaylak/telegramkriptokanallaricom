@@ -88,9 +88,11 @@ export default function KayitPage() {
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kullanıcı Adı</label>
             <input
               type="text"
+              name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               placeholder="kriptokrali"
             />
@@ -99,9 +101,11 @@ export default function KayitPage() {
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">E-Posta</label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               placeholder="mail@ornek.com"
             />
@@ -110,10 +114,12 @@ export default function KayitPage() {
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Şifre</label>
             <input
               type="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
+              autoComplete="new-password"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               placeholder="••••••••"
             />

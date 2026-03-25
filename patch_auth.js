@@ -1,0 +1,37 @@
+const fs = require('fs');
+
+async function updateAuth() {
+  const token = 'sbp_256c27f05c60db3641b6aec0ba0f0a169cb7b5f2';
+  const ref = 'bmvnmlbfozulqflkgdns';
+  const htmlContent = fs.readFileSync('C:\\Users\\ERAY\\.gemini\\antigravity\\brain\\27fe545e-e6cc-4a1a-a7cd-fef543453116\\email_template.html', 'utf8');
+
+  const body = {
+    "smtp_admin_email": "telegramkanaliiletisim@outlook.com",
+    "smtp_host": "smtp-mail.outlook.com",
+    "smtp_port": "587",
+    "smtp_user": "telegramkanaliiletisim@outlook.com",
+    "smtp_pass": "Dominik99-+()ERAY",
+    "smtp_sender_name": "TelegramKripto Kanalları",
+    "mailer_subjects_confirmation": "Aramıza Hoş Geldiniz! Hesabınızı Onaylayın",
+    "mailer_templates_confirmation_content": htmlContent
+  };
+
+  const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/config/auth`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (res.ok) {
+    const json = await res.json();
+    console.log("SUCCESS");
+  } else {
+    const text = await res.text();
+    console.log("ERROR", res.status, text);
+  }
+}
+
+updateAuth().catch(console.error);
