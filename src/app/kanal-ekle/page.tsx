@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { Send, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 
 const categories = [
   { slug: 'sinyal', name: '📊 Sinyal Kanalları' },
@@ -20,8 +20,39 @@ export default function KanalEklePage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
 
+  const [fetchingTg, setFetchingTg] = useState(false)
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleFetchData = async () => {
+    if (!form.telegram_url || (!form.telegram_url.includes('t.me') && !form.telegram_url.includes('@'))) {
+      setError('Geçerli bir t.me linki veya @username giriniz.')
+      return
+    }
+    setError('')
+    setFetchingTg(true)
+    try {
+      const res = await fetch('/api/telegram-fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: form.telegram_url })
+      })
+      const data = await res.json()
+      if (res.ok && data.name) {
+        setForm(prev => ({
+          ...prev,
+          name: data.name,
+          description: data.description || prev.description
+        }))
+      } else {
+        setError(data.error || 'Veri çekilemedi. Kanal gizli olabilir veya link hatalı.')
+      }
+    } catch (err) {
+      setError('Veri çekilirken bağlantı hatası oluştu.')
+    }
+    setFetchingTg(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,12 +118,23 @@ export default function KanalEklePage() {
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1.5">Telegram Linki *</label>
-            <input
-              name="telegram_url" value={form.telegram_url} onChange={handleChange} required
-              placeholder="https://t.me/kanaladi"
-              type="url"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
-            />
+            <div className="flex gap-2">
+              <input
+                name="telegram_url" value={form.telegram_url} onChange={handleChange} required
+                placeholder="https://t.me/kanaladi"
+                type="text"
+                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+              />
+              <button 
+                type="button" 
+                onClick={handleFetchData} 
+                disabled={fetchingTg}
+                className="btn-secondary px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 flex-shrink-0"
+              >
+                {fetchingTg ? <RefreshCw className="w-4 h-4 animate-spin"/> : 'Verileri Çek'}
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-1.5 ml-1">Linki girip "Verileri Çek" butonuna basarak kanal adı ve açıklamasını otomatik doldurabilirsiniz.</p>
           </div>
 
           <div>
