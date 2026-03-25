@@ -261,11 +261,11 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <Link href={`/admin/kanal-duzenle/${ch.id}`} className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
-                      <PenTool className="w-4 h-4" />
+                    <Link href={`/admin/kanal-duzenle/${ch.id}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 font-bold text-xs border border-orange-200 hover:bg-orange-100 transition-all">
+                      <PenTool className="w-3.5 h-3.5" /> Düzenle
                     </Link>
-                    <button onClick={() => deleteChannel(ch.id)} className="p-2 rounded-lg bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition-all" title="Sil">
-                      <Trash2 className="w-4 h-4" />
+                    <button onClick={() => deleteChannel(ch.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 font-bold text-xs border border-red-200 hover:bg-red-100 transition-all">
+                      <Trash2 className="w-3.5 h-3.5" /> Sil
                     </button>
                   </div>
                 </div>
@@ -357,8 +357,8 @@ export default function AdminPage() {
                     <p className="text-xs text-slate-500 mt-1 font-medium">{new Date(blog.created_at).toLocaleDateString('tr-TR')}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Link href={`/admin/blog-duzenle/${blog.id}`} className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
-                      <PenTool className="w-4 h-4" />
+                    <Link href={`/admin/blog-duzenle/${blog.id}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 font-bold text-xs border border-orange-200 hover:bg-orange-100 transition-all">
+                      <PenTool className="w-3.5 h-3.5" /> Düzenle
                     </Link>
                     <button
                       onClick={() => toggleBlogPublish(blog.id, blog.is_published)}
