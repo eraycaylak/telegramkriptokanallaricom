@@ -37,6 +37,10 @@ export default function KayitPage() {
          setError('Çok fazla kayıt isteği gönderdiniz. Lütfen güvenlik sebebiyle bir süre bekleyip tekrar deneyiniz.')
       } else if (error.message.toLowerCase().includes('already registered')) {
          setError('Bu e-posta adresi zaten kayıtlı.')
+      } else if (error.status === 504 || error.message.includes('504')) {
+         // The GoTrue backend drops HTTP connections at exactly 10.0s if their mail queue is clogged,
+         // but log traces reveal the email often still fires asynchronously ~600ms later.
+         setError('Sunucu yoğunluğu nedeniyle bağlantı zaman aşımına uğradı. Ancak kayıt onay e-postanız arka planda gönderilmiş olabilir, lütfen e-posta veya spam kutunuzu 1-2 dakika içinde kontrol ediniz.')
       } else {
          setError(error.message)
       }
