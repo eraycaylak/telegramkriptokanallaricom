@@ -147,7 +147,13 @@ export default function AdminPage() {
     })
 
     if (insertError) {
-      setAddError('Kanal eklenirken hata: ' + insertError.message)
+      if (insertError.code === '23505') {
+        setAddError('Bu kanal zaten dizinde mevcut. Aynı Telegram URL\'si tekrar eklenemez.')
+      } else if (insertError.message.includes('out of range')) {
+        setAddError('Üye sayısı çok büyük — veri tabanı sınırını aşıyor. Değeri düzeltin ve tekrar deneyin.')
+      } else {
+        setAddError('Kanal eklenirken hata: ' + insertError.message)
+      }
       setAddStatus('error')
     } else {
       setAddStatus('success')
