@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation'
 import { ChannelWithCategory } from '@/lib/types'
 import Link from 'next/link'
 import ChannelCard from '@/components/ChannelCard'
-import { ThumbsUp, Eye, Users, ChevronRight, ArrowLeft, Crown, Star, Globe, Tag, Calendar, ShieldCheck, HeartPulse, MessageSquareQuote, CheckCircle2 } from 'lucide-react'
+import { Eye, Users, ChevronRight, ArrowLeft, Crown, Star, Globe, Tag, Calendar, ShieldCheck, HeartPulse, MessageSquareQuote, CheckCircle2 } from 'lucide-react'
+import VoteButton from '@/components/VoteButton'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -179,7 +180,7 @@ export default async function KanalDetayPage({ params }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
             { icon: <HeartPulse className="w-5 h-5 text-emerald-500" />, val: `${ch.trust_score || 85}/100`, lbl: 'Güven Skoru' },
-            { icon: <ThumbsUp className="w-5 h-5 text-blue-500" />, val: ch.votes, lbl: 'Organik Oy' },
+            { icon: <div className="flex justify-center mb-1"><VoteButton channelId={ch.id} initialVotes={ch.votes} /></div>, val: '', lbl: 'Organik Oy' },
             { icon: <Eye className="w-5 h-5 text-slate-500" />, val: ch.views.toLocaleString('tr-TR'), lbl: 'Görüntülenme' },
             { icon: <Users className="w-5 h-5 text-violet-500" />, val: ch.member_count ? (ch.member_count >= 1000 ? `${(ch.member_count/1000).toFixed(1)}K` : ch.member_count) : 'Gizli', lbl: 'Telegram Üye' },
           ].map((s) => (
@@ -209,8 +210,8 @@ export default async function KanalDetayPage({ params }: Props) {
 
       {/* Sponsor Banner Here */}
       <div className="mt-8 mb-8">
-        <div className="w-full bg-slate-50 border border-slate-200 border-dashed rounded-xl h-24 flex items-center justify-center text-slate-500 text-xs font-semibold">
-          Sponsor Reklam Alanı (channel_detail)
+        <div className="w-full bg-slate-50 border border-slate-200 rounded-xl h-24 flex items-center justify-center text-slate-400 text-sm font-semibold tracking-wide">
+          <Star className="w-4 h-4 mr-2 text-slate-300" /> SPONSOR REKLAM ALANI
         </div>
       </div>
 

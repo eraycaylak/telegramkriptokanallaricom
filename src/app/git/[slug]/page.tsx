@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ExternalLink, ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react'
+import { ExternalLink, ShieldAlert, ArrowLeft, Loader2, Star } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Yönlendiriliyorsunuz... | Telegram Kripto Kanalları',
@@ -51,8 +51,8 @@ export default async function RedirectPage({ params }: Props) {
         </div>
 
         {/* Sponsor Banner Placeholder */}
-        <div className="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded-xl flex items-center justify-center text-slate-500 text-xs mb-8">
-          Sponsor Reklam Alanı (redirect_page)
+        <div className="w-full h-24 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 text-sm font-semibold tracking-wide mb-8">
+          <Star className="w-4 h-4 mr-2 text-slate-300" /> SPONSOR REKLAM ALANI
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">

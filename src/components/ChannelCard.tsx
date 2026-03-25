@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import { ThumbsUp, Eye, Users, Crown, Star, ShieldCheck, HeartPulse, ChevronRight, MessageSquareQuote } from 'lucide-react'
+import { Eye, Users, Crown, Star, ShieldCheck, HeartPulse, ChevronRight, MessageSquareQuote } from 'lucide-react'
 import { ChannelWithCategory } from '@/lib/types'
+import VoteButton from './VoteButton'
 
 interface ChannelCardProps {
   channel: ChannelWithCategory
@@ -58,7 +59,7 @@ export default function ChannelCard({ channel, rank }: ChannelCardProps) {
 
           {/* Desktop Only Stats Horizontal */}
           <div className="hidden sm:flex items-center gap-3 text-[11px] text-slate-500 flex-shrink-0 font-medium">
-             <span className="flex items-center gap-1 text-slate-700 font-bold bg-slate-50 px-2 py-0.5 rounded"><ThumbsUp className="w-3 h-3 text-blue-600" />{channel.votes}</span>
+             <VoteButton channelId={channel.id} initialVotes={channel.votes} />
              <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{channel.views > 1000 ? `${(channel.views/1000).toFixed(1)}k` : channel.views}</span>
              {channel.member_count && <span className="flex items-center gap-1"><Users className="w-3 h-3" />{channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count}</span>}
           </div>
@@ -73,7 +74,7 @@ export default function ChannelCard({ channel, rank }: ChannelCardProps) {
 
         {/* Mobile Only Stats Line */}
         <div className="flex sm:hidden items-center gap-2 text-[10px] text-slate-400 mt-1.5">
-          <span className="flex items-center gap-0.5 font-bold text-slate-700"><ThumbsUp className="w-3 h-3 text-blue-600" />{channel.votes}</span>
+          <VoteButton channelId={channel.id} initialVotes={channel.votes} />
           <span>•</span>
           {channel.member_count && <span className="flex items-center gap-0.5"><Users className="w-3 h-3" />{channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count}</span>}
           {channel.trust_score > 0 && <span className="flex items-center gap-0.5 font-bold text-emerald-600"><HeartPulse className="w-3 h-3" />{channel.trust_score}</span>}
