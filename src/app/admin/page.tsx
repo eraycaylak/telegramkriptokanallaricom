@@ -7,10 +7,14 @@ import Link from 'next/link'
 import { CheckCircle, XCircle, Trash2, Eye, Users, TrendingUp, BookOpen, RefreshCw, PenTool, LogOut, Plus, ThumbsUp } from 'lucide-react'
 import { Channel, Blog, Profile } from '@/lib/types'
 
-type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar'
+type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle'
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('bekleyenler')
+  const [form, setForm] = useState({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
+  const [fetchingTg, setFetchingTg] = useState(false)
+  const [addStatus, setAddStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [addError, setAddError] = useState('')
   const [channels, setChannels] = useState<Channel[]>([])
   const [pendingChannels, setPendingChannels] = useState<Channel[]>([])
   const [blogs, setBlogs] = useState<Blog[]>([])
@@ -71,9 +75,71 @@ export default function AdminPage() {
     router.push('/giris')
   }
 
+  const handleFetchData = async () => {
+    if (!form.telegram_url || (!form.telegram_url.includes('t.me') && !form.telegram_url.includes('@'))) {
+      setAddError('Geçerli bir t.me linki girin.')
+      return
+    }
+    setAddError('')
+    setFetchingTg(true)
+    try {
+      const res = await fetch('/api/telegram-fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: form.telegram_url })
+      })
+      const data = await res.json()
+      if (res.ok && data.name) {
+        setForm(prev => ({
+          ...prev,
+          name: data.name,
+          description: data.description || prev.description
+        }))
+      } else {
+        setAddError(data.error || 'Veri çekilemedi. Kanal gizli olabilir.')
+      }
+    } catch (err) {
+      setAddError('Veri çekilirken hata oluştu.')
+    }
+    setFetchingTg(false)
+  }
+
+  const handleFastAdd = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddStatus('loading')
+    setAddError('')
+
+    const { data: cat } = await supabase.from('categories').select('id').eq('slug', form.categorySlug).single()
+    const slugBase = form.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 60)
+    const slug = `${slugBase}-${Date.now()}`
+
+    const { error: insertError } = await supabase.from('channels').insert({
+      name: form.name,
+      slug,
+      description: form.description,
+      telegram_url: form.telegram_url,
+      telegram_username: form.telegram_url.replace('https://t.me/', '').replace('@', ''),
+      category_id: cat?.id ?? null,
+      language: form.language,
+      is_approved: true,
+      last_verified_at: new Date().toISOString()
+    })
+
+    if (insertError) {
+      setAddError('Kanal eklenirken hata: ' + insertError.message)
+      setAddStatus('error')
+    } else {
+      setAddStatus('success')
+      setForm({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
+      fetchData()
+      setTimeout(() => setAddStatus('idle'), 3000)
+    }
+  }
+
   const tabs: { key: Tab; label: string; count?: number }[] = [
     { key: 'bekleyenler', label: '⏳ Onay Bekleyenler', count: stats.pending },
     { key: 'kanallar', label: '📡 Aktif Kanallar', count: stats.total },
+    { key: 'hizliekle', label: '⚡ Hızlı Ekle' },
     { key: 'bloglar', label: '📝 Blog Yazıları', count: stats.blogs },
     { key: 'kullanicilar', label: '👤 Kullanıcılar', count: stats.users },
   ]
@@ -146,7 +212,7 @@ export default function AdminPage() {
                       <p className="font-extrabold text-slate-900 text-sm">{ch.name}</p>
                       <a href={ch.telegram_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline inline-block mt-0.5">{ch.telegram_url}</a>
                       {ch.description && <p className="text-xs text-slate-600 mt-2 line-clamp-2 bg-slate-50 p-2 rounded-lg border border-slate-100">{ch.description}</p>}
-                      <p className="text-[10px] uppercase font-bold text-slate-400 mt-2">{new Date(ch.created_at).toLocaleDateString('tr-TR')}</p>
+                      <p className="text-[10px] uppercase font-bold text-slate-500 mt-2">{new Date(ch.created_at).toLocaleDateString('tr-TR')}</p>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => approveChannel(ch.id)} className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all" title="Onayla">
@@ -171,14 +237,14 @@ export default function AdminPage() {
                     <p className="font-extrabold text-slate-900 text-sm">{ch.name}</p>
                     <div className="flex items-center gap-3 text-xs text-slate-500 font-medium mt-1">
                       <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3 text-blue-500"/> {ch.votes}</span>
-                      <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-slate-400"/> {ch.views}</span>
+                      <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-slate-500"/> {ch.views}</span>
                       <span>{new Date(ch.created_at).toLocaleDateString('tr-TR')}</span>
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <button className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
+                    <Link href={`/admin/kanal-duzenle/${ch.id}`} className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
                       <PenTool className="w-4 h-4" />
-                    </button>
+                    </Link>
                     <button onClick={() => deleteChannel(ch.id)} className="p-2 rounded-lg bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition-all" title="Sil">
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -186,6 +252,75 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Hızlı Ekle Tab */}
+          {tab === 'hizliekle' && (
+            <form onSubmit={handleFastAdd} className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 space-y-5 shadow-sm max-w-2xl">
+              <div className="mb-4">
+                <h2 className="text-xl font-black text-slate-900">⚡ Hızlı Onaylı Kanal Ekle</h2>
+                <p className="text-slate-500 text-sm mt-1">Girdiğiniz veriler kanal onay sırasına girmeden doğrudan yayınlanır.</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telegram Linki *</label>
+                <div className="flex gap-2">
+                  <input
+                    value={form.telegram_url} onChange={(e) => setForm(p => ({...p, telegram_url: e.target.value}))} required
+                    placeholder="https://t.me/kanaladi"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  />
+                  <button type="button" onClick={handleFetchData} disabled={fetchingTg} className="btn-secondary px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 flex-shrink-0 font-bold whitespace-nowrap">
+                    {fetchingTg ? <RefreshCw className="w-4 h-4 animate-spin"/> : 'Verileri Çek'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kanal Adı *</label>
+                <input
+                  value={form.name} onChange={(e) => setForm(p => ({...p, name: e.target.value}))} required
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kategori *(Slug girin)</label>
+                  <input
+                    value={form.categorySlug} onChange={(e) => setForm(p => ({...p, categorySlug: e.target.value}))} required
+                    placeholder="sinyal, haber, altcoin vb."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Dil</label>
+                  <select
+                    value={form.language} onChange={(e) => setForm(p => ({...p, language: e.target.value}))}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 transition-all"
+                  >
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="en">🇺🇸 İngilizce</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Açıklama</label>
+                <textarea
+                  value={form.description} onChange={(e) => setForm(p => ({...p, description: e.target.value}))}
+                  rows={3}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 transition-all resize-none"
+                />
+              </div>
+
+              {addError && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-200">{addError}</div>}
+              {addStatus === 'success' && <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-bold border border-emerald-200">Kanal başarıyla doğrudan yayına alındı!</div>}
+
+              <button type="submit" disabled={addStatus === 'loading'} className="btn-primary w-full justify-center py-3 text-base shadow-md">
+                {addStatus === 'loading' ? 'Kaydediliyor...' : 'Doğrudan Yayına Al'}
+              </button>
+            </form>
           )}
 
           {/* Blogs */}
@@ -203,9 +338,9 @@ export default function AdminPage() {
                     <p className="text-xs text-slate-500 mt-1 font-medium">{new Date(blog.created_at).toLocaleDateString('tr-TR')}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
+                    <Link href={`/admin/blog-duzenle/${blog.id}`} className="p-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 transition-all" title="Düzenle">
                       <PenTool className="w-4 h-4" />
-                    </button>
+                    </Link>
                     <button
                       onClick={() => toggleBlogPublish(blog.id, blog.is_published)}
                       className={`px-3 py-1.5 text-xs rounded-lg font-bold border transition-all ${blog.is_published ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
@@ -225,7 +360,7 @@ export default function AdminPage() {
           {tab === 'kullanicilar' && (
             <div className="space-y-3">
               {users.map((user) => (
-                <div key={user.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-sm hover:border-blue-300">
+                <Link href={`/admin/kullanici/${user.id}`} key={user.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-sm hover:border-blue-300 transition-colors">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-sm font-black text-white shadow-sm ring-2 ring-white">
                     {(user.display_name ?? user.username ?? 'U')[0].toUpperCase()}
                   </div>
@@ -234,7 +369,7 @@ export default function AdminPage() {
                     <p className="text-xs text-slate-500 font-medium mt-0.5">@{user.username}</p>
                   </div>
                   <span className={`badge text-[10px] px-2 py-0.5 ${user.role === 'admin' ? 'bg-violet-100 text-violet-700 border border-violet-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>{user.role}</span>
-                </div>
+                </Link>
               ))}
               {users.length === 0 && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm"><p className="text-slate-500 text-sm font-medium">Henüz kullanıcı yok.</p></div>

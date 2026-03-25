@@ -23,9 +23,9 @@ export default async function EnIyiTelegramKriptoKanallari2026() {
           <Calendar className="w-3 h-3" /> Son Güncelleme: 25 Mart 2026
         </div>
         
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-100 mb-4 mt-8">🏆 En İyi Telegram Kripto Kanalları 2026</h1>
-        <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-6">
-          Kripto para piyasalarında başarı, sağlam bir analiz ve anlık bilgi akışı gerektirir. Sizin için derlediğimiz bu <strong className="text-slate-200">2026 yılına özel Top 10 listesi</strong>, hem ücretsiz hem de premium analizleriyle liderliğini koruyan en prestijli grupları listeler. Tüm sıralamalar tamamen gerçek kullanıcıların verdikleri şeffaf oylara dayanmaktadır.
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4 mt-8">🏆 En İyi Telegram Kripto Kanalları 2026</h1>
+        <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-6">
+          Kripto para piyasalarında başarı, sağlam bir analiz ve anlık bilgi akışı gerektirir. Sizin için derlediğimiz bu <strong className="text-slate-800">2026 yılına özel Top 10 listesi</strong>, hem ücretsiz hem de premium analizleriyle liderliğini koruyan en prestijli grupları listeler. Tüm sıralamalar tamamen gerçek kullanıcıların verdikleri şeffaf oylara dayanmaktadır.
         </p>
       </div>
 

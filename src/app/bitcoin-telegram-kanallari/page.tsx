@@ -18,9 +18,9 @@ export default async function BitcoinTelegramKanallari() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-100 mb-4">🟠 Bitcoin Telegram Kanalları</h1>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-          Kriptonun kralı Bitcoin&apos;in yönü, tüm altcoin piyasasını doğrudan belirler. Sadece Bitcoin (BTC) paritelerine sadık kalan profesyonel <strong className="text-slate-200">Bitcoin Telegram Kanalları</strong>; zincir üstü (on-chain) veriler, balina transferleri, zorluk seviyeleri ve günlük kapanış destek/direnç analizlerini sizinle paylaşır. En saygın BTC analiz telegram gruplarını aşağıdan inceleyebilir ve aralarına katılabilirsiniz.
+        <h1 className="text-3xl font-black text-slate-900 mb-4">🟠 Bitcoin Telegram Kanalları</h1>
+        <p className="text-slate-500 text-sm leading-relaxed mb-6">
+          Kriptonun kralı Bitcoin&apos;in yönü, tüm altcoin piyasasını doğrudan belirler. Sadece Bitcoin (BTC) paritelerine sadık kalan profesyonel <strong className="text-slate-800">Bitcoin Telegram Kanalları</strong>; zincir üstü (on-chain) veriler, balina transferleri, zorluk seviyeleri ve günlük kapanış destek/direnç analizlerini sizinle paylaşır. En saygın BTC analiz telegram gruplarını aşağıdan inceleyebilir ve aralarına katılabilirsiniz.
         </p>
       </div>
 

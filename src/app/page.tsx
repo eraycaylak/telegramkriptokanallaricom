@@ -98,7 +98,7 @@ export default async function HomePage() {
 
       {/* SPONSOR HERO AD (home_hero) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="w-full bg-slate-100 border border-slate-200 border-dashed rounded-2xl h-24 flex items-center justify-center text-slate-400 text-sm font-semibold">
+        <div className="w-full bg-slate-100 border border-slate-200 border-dashed rounded-2xl h-24 flex items-center justify-center text-slate-500 text-sm font-semibold">
           [ Sponsor Reklam Alanı: Ana Sayfa Hero Altı (728x90) ]
         </div>
       </div>
@@ -192,7 +192,7 @@ export default async function HomePage() {
           
           <div className="relative z-10 text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl font-black mb-4">Gerçek Veri, Gerçek Topluluk</h2>
-            <p className="text-slate-400 font-medium leading-relaxed">Dizinimizde sadece organik kullanıcı deneyimi ile kanıtlanmış kripto telegram gruplarına yer veririz. Robot botlara veya spam sinyal akışlarına sıfır tolerans uygularız.</p>
+            <p className="text-slate-500 font-medium leading-relaxed">Dizinimizde sadece organik kullanıcı deneyimi ile kanıtlanmış kripto telegram gruplarına yer veririz. Robot botlara veya spam sinyal akışlarına sıfır tolerans uygularız.</p>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-6 relative z-10">
@@ -204,7 +204,7 @@ export default async function HomePage() {
               <div key={item.title} className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mb-4 shadow-inner border border-slate-700">{item.icon}</div>
                 <h3 className="font-bold text-lg mb-2 text-white">{item.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">{item.desc}</p>
+                <p className="text-sm text-slate-500 leading-relaxed font-medium">{item.desc}</p>
               </div>
             ))}
           </div>

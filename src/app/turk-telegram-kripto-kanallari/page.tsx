@@ -18,9 +18,9 @@ export default async function TurkTelegramKriptoKanallari() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-100 mb-4">🇹🇷 Türk Telegram Kripto Kanalları</h1>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-          Kripto para piyasasını takip ederken kendi dilinizde anlık haber almak, teknik analizleri Türkçe olarak detaylıca incelemek ve yerel toplulukların fikirlerini öğrenmek büyük bir avantajdır. Aşağıdaki liste, %100 Türkçe yayın yapan, tamamen <strong className="text-slate-200">Türk Telegram Kripto Kanalları</strong> arasından en iyilerini kullanıcı oylarıyla karşınıza getirmektedir. Ücretsiz veya premium seçeneklerle en aktif Türk Telegram sinyal kanallarına hemen katılın.
+        <h1 className="text-3xl font-black text-slate-900 mb-4">🇹🇷 Türk Telegram Kripto Kanalları</h1>
+        <p className="text-slate-500 text-sm leading-relaxed mb-6">
+          Kripto para piyasasını takip ederken kendi dilinizde anlık haber almak, teknik analizleri Türkçe olarak detaylıca incelemek ve yerel toplulukların fikirlerini öğrenmek büyük bir avantajdır. Aşağıdaki liste, %100 Türkçe yayın yapan, tamamen <strong className="text-slate-800">Türk Telegram Kripto Kanalları</strong> arasından en iyilerini kullanıcı oylarıyla karşınıza getirmektedir. Ücretsiz veya premium seçeneklerle en aktif Türk Telegram sinyal kanallarına hemen katılın.
         </p>
       </div>
 

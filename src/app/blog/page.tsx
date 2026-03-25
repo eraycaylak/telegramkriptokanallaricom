@@ -22,7 +22,7 @@ export default async function BlogPage() {
           <BookOpen className="w-5 h-5 text-blue-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-slate-100">📝 Kripto Blog</h1>
+          <h1 className="text-2xl font-black text-slate-900">📝 Kripto Blog</h1>
           <p className="text-slate-500 text-sm">Rehberler, incelemeler ve kripto dünyasından haberler</p>
         </div>
       </div>
@@ -40,7 +40,7 @@ export default async function BlogPage() {
                 </div>
               )}
               <div className="flex-1">
-                <h2 className="font-bold text-slate-200 group-hover:text-violet-400 transition-colors text-sm leading-snug mb-2">
+                <h2 className="font-bold text-slate-800 group-hover:text-violet-400 transition-colors text-sm leading-snug mb-2">
                   {blog.title}
                 </h2>
                 {blog.excerpt && <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">{blog.excerpt}</p>}

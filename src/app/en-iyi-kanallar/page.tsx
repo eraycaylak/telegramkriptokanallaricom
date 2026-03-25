@@ -22,7 +22,7 @@ export default async function EnIyiKanallarPage() {
           <Star className="w-5 h-5 text-amber-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-slate-100">⭐ En İyi Telegram Kripto Kanalları 2026</h1>
+          <h1 className="text-2xl font-black text-slate-900">⭐ En İyi Telegram Kripto Kanalları 2026</h1>
           <p className="text-slate-500 text-sm">Topluluk oyları ve görüntülenme sayısına göre sıralanmış en iyi kanallar</p>
         </div>
       </div>

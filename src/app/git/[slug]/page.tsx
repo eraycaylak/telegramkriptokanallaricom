@@ -51,7 +51,7 @@ export default async function RedirectPage({ params }: Props) {
         </div>
 
         {/* Sponsor Banner Placeholder */}
-        <div className="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded-xl flex items-center justify-center text-slate-400 text-xs mb-8">
+        <div className="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded-xl flex items-center justify-center text-slate-500 text-xs mb-8">
           Sponsor Reklam Alanı (redirect_page)
         </div>
 

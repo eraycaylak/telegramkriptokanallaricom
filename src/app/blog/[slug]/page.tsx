@@ -44,16 +44,16 @@ export default async function BlogDetayPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       <nav className="flex items-center gap-2 text-xs text-slate-600 mb-6">
-        <Link href="/" className="hover:text-slate-400">Ana Sayfa</Link>
+        <Link href="/" className="hover:text-slate-500">Ana Sayfa</Link>
         <span>/</span>
-        <Link href="/blog" className="hover:text-slate-400">Blog</Link>
+        <Link href="/blog" className="hover:text-slate-500">Blog</Link>
         <span>/</span>
-        <span className="text-slate-400 truncate max-w-[200px]">{blog.title}</span>
+        <span className="text-slate-500 truncate max-w-[200px]">{blog.title}</span>
       </nav>
 
       <article>
         <header className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-100 leading-tight mb-4">{blog.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight mb-4">{blog.title}</h1>
           <div className="flex items-center gap-4 text-xs text-slate-600">
             {blog.published_at && (
               <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{new Date(blog.published_at).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -74,13 +74,13 @@ export default async function BlogDetayPage({ params }: Props) {
         )}
 
         <div
-          className="prose prose-invert prose-sm max-w-none text-slate-400 leading-relaxed [&>h2]:text-slate-200 [&>h2]:font-bold [&>h3]:text-slate-300 [&>h3]:font-semibold [&>strong]:text-slate-300 [&>p]:mb-4 [&>ul]:pl-4 [&>ul>li]:text-slate-400 [&>h2]:mt-6 [&>h2]:mb-3 [&>h3]:mt-4 [&>h3]:mb-2"
+          className="prose prose-invert prose-sm max-w-none text-slate-500 leading-relaxed [&>h2]:text-slate-800 [&>h2]:font-bold [&>h3]:text-slate-700 [&>h3]:font-semibold [&>strong]:text-slate-700 [&>p]:mb-4 [&>ul]:pl-4 [&>ul>li]:text-slate-500 [&>h2]:mt-6 [&>h2]:mb-3 [&>h3]:mt-4 [&>h3]:mb-2"
           dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br />') }}
         />
       </article>
 
       <div className="border-t border-white/5 mt-10 pt-6">
-        <Link href="/blog" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors">
+        <Link href="/blog" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Blog&apos;a dön
         </Link>
       </div>

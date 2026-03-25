@@ -28,7 +28,12 @@ export default function GirisPage() {
       setError(error.message.includes('Invalid login') ? 'E-posta veya şifre hatalı.' : error.message)
       setLoading(false)
     } else {
-      router.push('/admin') // redirect to admin. The admin page will check role.
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single()
+      if (profile?.role === 'admin') {
+        router.push('/admin')
+      } else {
+        router.push('/dashboard')
+      }
       router.refresh()
     }
   }

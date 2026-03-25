@@ -23,10 +23,10 @@ export default async function EnIyiTelegramKanallari() {
           <Calendar className="w-3 h-3" /> Son Güncelleme: 25 Mart 2026
         </div>
         
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-100 mb-4 mt-8 flex items-center gap-3">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4 mt-8 flex items-center gap-3">
           <Crown className="w-8 h-8 text-amber-400" /> En İyi Telegram Kanalları
         </h1>
-        <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-6">
+        <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-6">
           Sadece kripto dünyasının elit gruplarının seçildiği, sahte kullanıcıların ve vaatlerin olmadığı, tamamen gerçek üye etkileşimine ve kazanç oranlarına (win-rate) göre filtrelenmiş <strong>En İyi Telegram Kanalları Top 10</strong> listesi içerisindesiniz. Bu liste, kullanıcı geri dönüşleriyle canlı olarak ve düzenli güncellenmektedir.
         </p>
       </div>

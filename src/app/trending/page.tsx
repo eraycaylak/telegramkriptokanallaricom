@@ -22,7 +22,7 @@ export default async function TrendingPage() {
           <TrendingUp className="w-5 h-5 text-orange-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-slate-100">🔥 Trending Kanallar</h1>
+          <h1 className="text-2xl font-black text-slate-900">🔥 Trending Kanallar</h1>
           <p className="text-slate-500 text-sm">En çok oy alan ve konuşulan kanallar</p>
         </div>
       </div>

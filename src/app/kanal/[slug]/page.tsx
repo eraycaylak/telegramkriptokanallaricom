@@ -160,11 +160,11 @@ export default async function KanalDetayPage({ params }: Props) {
                   {ch.categories.icon} {ch.categories.name}
                 </Link>
               )}
-              <span className="text-slate-300">|</span>
-              <span className="flex items-center gap-1"><Globe className="w-4 h-4 text-slate-400" /> {ch.language === 'tr' ? '🇹🇷 Türkçe' : ch.language}</span>
+              <span className="text-slate-700">|</span>
+              <span className="flex items-center gap-1"><Globe className="w-4 h-4 text-slate-500" /> {ch.language === 'tr' ? '🇹🇷 Türkçe' : ch.language}</span>
               {ch.last_verified_at && (
                 <>
-                  <span className="text-slate-300">|</span>
+                  <span className="text-slate-700">|</span>
                   <span className="flex items-center gap-1 text-emerald-600 font-medium">
                     <CheckCircle2 className="w-4 h-4" /> 
                     Son Kontrol: {new Date(ch.last_verified_at).toLocaleDateString('tr-TR')}
@@ -180,7 +180,7 @@ export default async function KanalDetayPage({ params }: Props) {
           {[
             { icon: <HeartPulse className="w-5 h-5 text-emerald-500" />, val: `${ch.trust_score || 85}/100`, lbl: 'Güven Skoru' },
             { icon: <ThumbsUp className="w-5 h-5 text-blue-500" />, val: ch.votes, lbl: 'Organik Oy' },
-            { icon: <Eye className="w-5 h-5 text-slate-400" />, val: ch.views.toLocaleString('tr-TR'), lbl: 'Görüntülenme' },
+            { icon: <Eye className="w-5 h-5 text-slate-500" />, val: ch.views.toLocaleString('tr-TR'), lbl: 'Görüntülenme' },
             { icon: <Users className="w-5 h-5 text-violet-500" />, val: ch.member_count ? (ch.member_count >= 1000 ? `${(ch.member_count/1000).toFixed(1)}K` : ch.member_count) : 'Gizli', lbl: 'Telegram Üye' },
           ].map((s) => (
             <div key={s.lbl} className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-center">
@@ -209,7 +209,7 @@ export default async function KanalDetayPage({ params }: Props) {
 
       {/* Sponsor Banner Here */}
       <div className="mt-8 mb-8">
-        <div className="w-full bg-slate-50 border border-slate-200 border-dashed rounded-xl h-24 flex items-center justify-center text-slate-400 text-xs font-semibold">
+        <div className="w-full bg-slate-50 border border-slate-200 border-dashed rounded-xl h-24 flex items-center justify-center text-slate-500 text-xs font-semibold">
           Sponsor Reklam Alanı (channel_detail)
         </div>
       </div>
@@ -246,7 +246,7 @@ export default async function KanalDetayPage({ params }: Props) {
             <p className="text-slate-500 font-medium text-sm mt-1">Bu kanal hakkındaki gerçek yatırımcı deneyimleri ve şikayetler.</p>
           </div>
           <div className="hidden sm:flex text-right flex-col items-end">
-            <div className="text-3xl font-black text-slate-900">{ch.trust_score || 85} <span className="text-lg text-slate-400 font-semibold">/100</span></div>
+            <div className="text-3xl font-black text-slate-900">{ch.trust_score || 85} <span className="text-lg text-slate-500 font-semibold">/100</span></div>
             <div className="text-xs font-bold text-emerald-600">Yüksek Güven</div>
           </div>
         </div>
@@ -260,14 +260,14 @@ export default async function KanalDetayPage({ params }: Props) {
                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">{(rv.user_name as string)[0].toUpperCase()}</div>
                     {rv.user_name}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">{new Date(rv.created_at).toLocaleDateString('tr-TR')}</span>
+                  <span className="text-xs text-slate-500 font-medium">{new Date(rv.created_at).toLocaleDateString('tr-TR')}</span>
                 </div>
                 <p className="text-slate-600 text-sm leading-relaxed">{rv.comment}</p>
               </div>
             ))
           ) : (
             <div className="text-center py-10 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
-              <MessageSquareQuote className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <MessageSquareQuote className="w-10 h-10 text-slate-700 mx-auto mb-3" />
               <h3 className="text-slate-900 font-bold mb-1">Henüz Yorum Yapılmamış</h3>
               <p className="text-slate-500 text-sm">İlk deneyimi siz paylaşın ve topluluğumuza rehberlik edin.</p>
               <button className="mt-4 btn-secondary py-2 px-6 text-sm">Yorum Yap</button>

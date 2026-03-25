@@ -19,9 +19,9 @@ export default async function BinanceTelegramKanallari() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-100 mb-4">🟡 Binance Telegram Kanalları</h1>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-          Dünyanın en büyük borsası Binance üzerinde aktif işlem veriyorsanız, sadece Binance listelemesi olan coin ve tokenlara odaklanan <strong className="text-slate-200">Binance Telegram Kanalları</strong> arayışındasınız demektir. Vadeli (Futures) ve Spot piyasadaki en taze long / short sinyallerini yayınlayan, Binance Launchpool airdroplarını haber veren en isabetli Telegram kripto gruplarını keşfedin.
+        <h1 className="text-3xl font-black text-slate-900 mb-4">🟡 Binance Telegram Kanalları</h1>
+        <p className="text-slate-500 text-sm leading-relaxed mb-6">
+          Dünyanın en büyük borsası Binance üzerinde aktif işlem veriyorsanız, sadece Binance listelemesi olan coin ve tokenlara odaklanan <strong className="text-slate-800">Binance Telegram Kanalları</strong> arayışındasınız demektir. Vadeli (Futures) ve Spot piyasadaki en taze long / short sinyallerini yayınlayan, Binance Launchpool airdroplarını haber veren en isabetli Telegram kripto gruplarını keşfedin.
         </p>
       </div>
 

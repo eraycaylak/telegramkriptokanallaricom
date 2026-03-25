@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Send, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
+import { Send, CheckCircle, AlertCircle } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const categories = [
   { slug: 'sinyal', name: '📊 Sinyal Kanalları' },
@@ -16,47 +18,36 @@ const categories = [
 ]
 
 export default function KanalEklePage() {
+  const router = useRouter()
   const [form, setForm] = useState({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
-
-  const [fetchingTg, setFetchingTg] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.push('/giris')
+      } else {
+        setUser(session.user)
+      }
+    }
+    checkAuth()
+  }, [router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleFetchData = async () => {
-    if (!form.telegram_url || (!form.telegram_url.includes('t.me') && !form.telegram_url.includes('@'))) {
-      setError('Geçerli bir t.me linki veya @username giriniz.')
-      return
-    }
-    setError('')
-    setFetchingTg(true)
-    try {
-      const res = await fetch('/api/telegram-fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: form.telegram_url })
-      })
-      const data = await res.json()
-      if (res.ok && data.name) {
-        setForm(prev => ({
-          ...prev,
-          name: data.name,
-          description: data.description || prev.description
-        }))
-      } else {
-        setError(data.error || 'Veri çekilemedi. Kanal gizli olabilir veya link hatalı.')
-      }
-    } catch (err) {
-      setError('Veri çekilirken bağlantı hatası oluştu.')
-    }
-    setFetchingTg(false)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user) {
+      setError('İşlemi tamamlamak için giriş yapmalısınız.')
+      return
+    }
+    
     setStatus('loading')
     setError('')
 
@@ -82,6 +73,7 @@ export default function KanalEklePage() {
       is_premium: false,
       votes: 0,
       views: 0,
+      submitted_by: user.id,
     })
 
     if (insertError) {
@@ -95,53 +87,42 @@ export default function KanalEklePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-black text-slate-100 mb-2">📡 Kanal Ekle</h1>
+        <h1 className="text-3xl font-black text-slate-900 mb-2">📡 Kanal Ekle</h1>
         <p className="text-slate-500 text-sm">Telegram kripto kanalınızı dizine ekleyin. Admin onayından sonra yayınlanacaktır.</p>
       </div>
 
       {status === 'success' ? (
-        <div className="glass-card p-10 text-center">
-          <CheckCircle className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-100 mb-2">Başvurunuz Alındı!</h2>
+        <div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-10 text-center">
+          <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Başvurunuz Alındı!</h2>
           <p className="text-slate-500 text-sm">Kanalınız inceleme sürecinden geçtikten sonra yayınlanacaktır. Genellikle 24 saat içinde onaylanır.</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 sm:p-10 space-y-6">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Kanal Adı *</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kanal Adı *</label>
             <input
               name="name" value={form.name} onChange={handleChange} required
               placeholder="Örn: Binance Türkiye Sinyalleri"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Telegram Linki *</label>
-            <div className="flex gap-2">
-              <input
-                name="telegram_url" value={form.telegram_url} onChange={handleChange} required
-                placeholder="https://t.me/kanaladi"
-                type="text"
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
-              />
-              <button 
-                type="button" 
-                onClick={handleFetchData} 
-                disabled={fetchingTg}
-                className="btn-secondary px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 flex-shrink-0"
-              >
-                {fetchingTg ? <RefreshCw className="w-4 h-4 animate-spin"/> : 'Verileri Çek'}
-              </button>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1.5 ml-1">Linki girip "Verileri Çek" butonuna basarak kanal adı ve açıklamasını otomatik doldurabilirsiniz.</p>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telegram Linki *</label>
+            <input
+              name="telegram_url" value={form.telegram_url} onChange={handleChange} required
+              placeholder="https://t.me/kanaladi"
+              type="text"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Kategori *</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Kategori *</label>
             <select
               name="categorySlug" value={form.categorySlug} onChange={handleChange} required
-              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-violet-500/50 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
             >
               <option value="">Kategori seçin...</option>
               {categories.map((c) => (
@@ -151,20 +132,20 @@ export default function KanalEklePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Açıklama</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Açıklama</label>
             <textarea
               name="description" value={form.description} onChange={handleChange}
               placeholder="Kanalınızın içeriği ve özellikleri hakkında kısa bir açıklama yazın..."
               rows={4}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Dil</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Dil</label>
             <select
               name="language" value={form.language} onChange={handleChange}
-              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-violet-500/50 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
             >
               <option value="tr">🇹🇷 Türkçe</option>
               <option value="en">🇺🇸 İngilizce</option>
@@ -173,21 +154,21 @@ export default function KanalEklePage() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
+            <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" /> <span className="leading-relaxed">{error}</span>
             </div>
           )}
 
-          <button type="submit" disabled={status === 'loading'} className="btn-primary w-full justify-center py-3 text-base">
+          <button type="submit" disabled={status === 'loading'} className="btn-primary w-full shadow-md justify-center py-3.5 text-base mt-2">
             {status === 'loading' ? (
-              <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Gönderiliyor...</span>
+              <span className="flex items-center gap-2"><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Gönderiliyor...</span>
             ) : (
-              <><Send className="w-4 h-4" /> Kanal Başvurusu Gönder</>
+              <><Send className="w-5 h-5" /> Kanal Başvurusu Gönder</>
             )}
           </button>
 
-          <p className="text-xs text-slate-600 text-center">
-            Kanal ekleyerek <a href="/kullanim-kosullari" className="text-violet-400 hover:underline">Kullanım Koşulları</a>&apos;nı kabul etmiş olursunuz.
+          <p className="text-sm text-slate-500 text-center font-medium mt-4">
+            Kanal ekleyerek <Link href="/kullanim-kosullari" className="text-blue-600 font-bold hover:underline">Kullanım Koşulları</Link>&apos;nı kabul etmiş olursunuz.
           </p>
         </form>
       )}

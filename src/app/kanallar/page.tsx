@@ -48,7 +48,7 @@ export default async function KanallarPage({ searchParams }: Props) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-100 mb-2">Telegram Kripto Kanalları</h1>
+        <h1 className="text-3xl font-black text-slate-900 mb-2">Telegram Kripto Kanalları</h1>
         <p className="text-slate-500 text-sm">
           {typedChannels.length} kanal listeleniyor
         </p>
@@ -63,7 +63,7 @@ export default async function KanallarPage({ searchParams }: Props) {
               name="q"
               defaultValue={q}
               placeholder="Kanal ara..."
-              className="w-full bg-transparent text-sm text-slate-200 placeholder:text-slate-600 outline-none"
+              className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-600 outline-none"
             />
           </form>
         </div>
@@ -73,7 +73,7 @@ export default async function KanallarPage({ searchParams }: Props) {
             <Link
               key={opt.val}
               href={`/kanallar?siralama=${opt.val}${kategori ? `&kategori=${kategori}` : ''}`}
-              className={`text-xs px-3 py-1.5 rounded-lg transition-all ${siralama === opt.val ? 'bg-violet-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+              className={`text-xs px-3 py-1.5 rounded-lg transition-all ${siralama === opt.val ? 'bg-violet-600 text-white' : 'bg-white/5 text-slate-500 hover:bg-white/10'}`}
             >
               {opt.lbl}
             </Link>
@@ -89,7 +89,7 @@ export default async function KanallarPage({ searchParams }: Props) {
             <div className="space-y-1">
               <Link
                 href="/kanallar"
-                className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm transition-all ${!kategori ? 'bg-violet-600/20 text-violet-300' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm transition-all ${!kategori ? 'bg-violet-600/20 text-violet-300' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
               >
                 <span>🌐 Tümü</span>
               </Link>
@@ -97,7 +97,7 @@ export default async function KanallarPage({ searchParams }: Props) {
                 <Link
                   key={cat.id}
                   href={`/kanallar?kategori=${cat.slug}`}
-                  className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm transition-all ${kategori === cat.slug ? 'bg-violet-600/20 text-violet-300' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                  className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm transition-all ${kategori === cat.slug ? 'bg-violet-600/20 text-violet-300' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                 >
                   <span>{cat.icon} {cat.name}</span>
                   <span className="text-xs text-slate-600">{cat.channel_count}</span>

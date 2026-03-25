@@ -18,8 +18,8 @@ export default async function TrendingTelegramKanallariPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-100 mb-4">🔥 Trending Telegram Kanalları</h1>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
+        <h1 className="text-3xl font-black text-slate-900 mb-4">🔥 Trending Telegram Kanalları</h1>
+        <p className="text-slate-500 text-sm leading-relaxed mb-6">
           Kitlelerin dikkatini kısa sürede üzerine çeken ve <strong>Trend</strong> olan en popüler Telegram kripto kanalları. Hızlı üye ivmesi ve isabetli sinyal bildirimleriyle sektörün gündeminde olan topluluklara siz de katılın.
         </p>
       </div>
