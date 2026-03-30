@@ -6,22 +6,24 @@ import { ChannelWithCategory, Category } from '@/lib/types'
 
 async function getData() {
   const supabase = await createClient()
-  const [featuredRes, newRes, trendingRes, categoriesRes] = await Promise.all([
+  const [featuredRes, newRes, trendingRes, categoriesRes, bannerRes] = await Promise.all([
     supabase.from('channels').select('*, categories(*)').eq('is_approved', true).eq('is_featured', true).order('votes', { ascending: false }).limit(5),
     supabase.from('channels').select('*, categories(*)').eq('is_approved', true).order('created_at', { ascending: false }).limit(6),
-    supabase.from('channels').select('*, categories(*)').eq('is_approved', true).order('votes', { ascending: false }).limit(10),
+    supabase.from('channels').select('*, categories(*)').eq('is_approved', true).order('trending_score', { ascending: false, nullsFirst: false }).order('votes', { ascending: false }).limit(10),
     supabase.from('categories').select('*').order('channel_count', { ascending: false }),
+    supabase.from('site_settings').select('value').eq('key', 'home_banner_ad').single(),
   ])
   return {
     featured: (featuredRes.data ?? []) as ChannelWithCategory[],
     newest: (newRes.data ?? []) as ChannelWithCategory[],
     trending: (trendingRes.data ?? []) as ChannelWithCategory[],
     categories: (categoriesRes.data ?? []) as Category[],
+    banner: bannerRes.data?.value as { imageUrl: string, link: string, isActive: boolean } | null,
   }
 }
 
 export default async function HomePage() {
-  const { featured, newest, trending, categories } = await getData()
+  const { featured, newest, trending, categories, banner } = await getData()
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -97,11 +99,18 @@ export default async function HomePage() {
       </section>
 
       {/* SPONSOR HERO AD (home_hero) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="w-full bg-slate-100 border border-slate-200 border-dashed rounded-2xl h-24 flex items-center justify-center text-slate-500 text-sm font-semibold">
-          [ Sponsor Reklam Alanı: Ana Sayfa Hero Altı (728x90) ]
-        </div>
+      {banner?.isActive && (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-[-1rem]">
+        <a href={banner.link || '#'} target="_blank" rel="noopener noreferrer" className="block w-full overflow-hidden rounded-2xl border border-blue-200 shadow-sm hover:shadow-md transition-all group relative bg-slate-50 flex items-center justify-center min-h-[90px]">
+          {banner.imageUrl ? (
+            <img src={banner.imageUrl} alt="Sponsor" className="w-full h-auto max-h-[120px] object-cover sm:object-contain" />
+          ) : (
+            <div className="p-6 text-center text-slate-500 text-sm font-semibold">[ Reklam Görseli Yok ]</div>
+          )}
+          <div className="absolute top-2 right-2 bg-black/40 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded backdrop-blur-sm tracking-widest">AD</div>
+        </a>
       </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 py-16">
 

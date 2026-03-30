@@ -22,7 +22,7 @@ export default function KanalEklePage() {
   const [form, setForm] = useState({ name: '', telegram_url: '', description: '', categorySlug: '', language: 'tr' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<any>(undefined)
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -82,6 +82,10 @@ export default function KanalEklePage() {
     } else {
       setStatus('success')
     }
+  }
+
+  if (user === undefined) {
+    return <div className="min-h-[50vh] flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>
   }
 
   return (

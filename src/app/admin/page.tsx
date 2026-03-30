@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { CheckCircle, XCircle, Trash2, Eye, Users, TrendingUp, BookOpen, RefreshCw, PenTool, LogOut, Plus, ThumbsUp } from 'lucide-react'
 import { Channel, Blog, Profile } from '@/lib/types'
 
-type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle'
+type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle' | 'reklamlar'
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('bekleyenler')
@@ -22,6 +22,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
   const [stats, setStats] = useState({ total: 0, pending: 0, blogs: 0, users: 0 })
+  const [banner, setBanner] = useState({ isActive: false, imageUrl: '', link: '' })
   const router = useRouter()
 
   const supabase = createClient()
@@ -41,11 +42,12 @@ export default function AdminPage() {
     }
     setAuthChecked(true)
 
-    const [chRes, pendRes, blogRes, usrRes] = await Promise.all([
+    const [chRes, pendRes, blogRes, usrRes, bannerRes] = await Promise.all([
       supabase.from('channels').select('*').eq('is_approved', true).order('created_at', { ascending: false }).limit(50),
       supabase.from('channels').select('*').eq('is_approved', false).order('created_at', { ascending: false }),
       supabase.from('blogs').select('*').order('created_at', { ascending: false }),
       supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(50),
+      supabase.from('site_settings').select('value').eq('key', 'home_banner_ad').single(),
     ])
     setChannels((chRes.data ?? []) as Channel[])
     setPendingChannels((pendRes.data ?? []) as Channel[])
@@ -57,6 +59,7 @@ export default function AdminPage() {
       blogs: (blogRes.data ?? []).length,
       users: (usrRes.data ?? []).length,
     })
+    if (bannerRes.data?.value) setBanner(bannerRes.data.value)
     setLoading(false)
   }
 
@@ -71,6 +74,28 @@ export default function AdminPage() {
     if (!confirm('Kanalı silmek istediğinizden emin misiniz?')) return
     await supabase.from('channels').delete().eq('id', id)
     fetchData()
+  }
+
+  const toggleFeatured = async (id: string, current: boolean) => {
+    await supabase.from('channels').update({ is_featured: !current }).eq('id', id)
+    fetchData()
+  }
+
+  const updateTrendingScore = async (id: string) => {
+    const val = prompt('Bu kanala kaç Trend Skoru vermek istiyorsunuz? (Boş veya Harf: 0, Büyük olan daha üstte çıkar):')
+    if (val === null) return
+    const score = parseInt(val, 10) || 0
+    await supabase.from('channels').update({ trending_score: score }).eq('id', id)
+    fetchData()
+  }
+
+  const saveBanner = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddStatus('loading')
+    const { error } = await supabase.from('site_settings').update({ value: banner }).eq('key', 'home_banner_ad')
+    if (error) setAddError('Reklam güncellenemedi: ' + error.message)
+    else { setAddError(''); alert('Reklam afişi kaydedildi!') }
+    setAddStatus('idle')
   }
 
   const toggleBlogPublish = async (id: string, current: boolean) => {
@@ -166,6 +191,7 @@ export default function AdminPage() {
   const tabs: { key: Tab; label: string; count?: number }[] = [
     { key: 'bekleyenler', label: '⏳ Onay Bekleyenler', count: stats.pending },
     { key: 'kanallar', label: '📡 Aktif Kanallar', count: stats.total },
+    { key: 'reklamlar', label: '📢 Reklam Afişi' },
     { key: 'hizliekle', label: '⚡ Hızlı Ekle' },
     { key: 'bloglar', label: '📝 Blog Yazıları', count: stats.blogs },
     { key: 'kullanicilar', label: '👤 Kullanıcılar', count: stats.users },
@@ -268,12 +294,18 @@ export default function AdminPage() {
                       <span>{new Date(ch.created_at).toLocaleDateString('tr-TR')}</span>
                     </div>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <Link href={`/admin/kanal-duzenle/${ch.id}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 font-bold text-xs border border-orange-200 hover:bg-orange-100 transition-all">
-                      <PenTool className="w-3.5 h-3.5" /> Düzenle
+                  <div className="flex flex-wrap gap-2 items-center justify-end">
+                    <button onClick={() => toggleFeatured(ch.id, !!ch.is_featured)} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold text-xs border transition-all ${ch.is_featured ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`} title="Sponsor/Öne Çıkan Yap">
+                      ⭐ Sponsor
+                    </button>
+                    <button onClick={() => updateTrendingScore(ch.id)} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold text-xs border transition-all ${(ch.trending_score||0) > 0 ? 'bg-orange-100 text-orange-700 border-orange-300' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`} title="Trend Skoru Ver">
+                      🔥 Trend
+                    </button>
+                    <Link href={`/admin/kanal-duzenle/${ch.id}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-all">
+                      <PenTool className="w-3.5 h-3.5" />
                     </Link>
                     <button onClick={() => deleteChannel(ch.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 font-bold text-xs border border-red-200 hover:bg-red-100 transition-all">
-                      <Trash2 className="w-3.5 h-3.5" /> Sil
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -346,6 +378,52 @@ export default function AdminPage() {
 
               <button type="submit" disabled={addStatus === 'loading'} className="btn-primary w-full justify-center py-3 text-base shadow-md">
                 {addStatus === 'loading' ? 'Kaydediliyor...' : 'Doğrudan Yayına Al'}
+              </button>
+            </form>
+          )}
+
+          {/* Reklamlar Tab */}
+          {tab === 'reklamlar' && (
+            <form onSubmit={saveBanner} className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 space-y-5 shadow-sm max-w-2xl max-w-full overflow-hidden">
+              <div className="mb-4">
+                <h2 className="text-xl font-black text-slate-900 break-words">📢 Ana Sayfa Banner Reklamı</h2>
+                <p className="text-slate-500 text-sm mt-1 break-words">Ana sayfanın üstünde yer alacak olan özel afişi (Sponsoru) buradan yönetebilirsiniz.</p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input type="checkbox" id="ad_active" checked={banner.isActive} onChange={(e) => setBanner(p => ({...p, isActive: e.target.checked}))} className="w-5 h-5 text-blue-600 rounded border-slate-300" />
+                <label htmlFor="ad_active" className="font-bold text-slate-800">Reklam Yayında Olsun</label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Görsel URL (JPG/PNG/GIF) *</label>
+                <input
+                  value={banner.imageUrl} onChange={(e) => setBanner(p => ({...p, imageUrl: e.target.value}))}
+                  placeholder="https://resim-urlsi.com/banner.jpg" required={banner.isActive}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Tıklanma Linki (Yönlendirilecek URL) *</label>
+                <input
+                  value={banner.link} onChange={(e) => setBanner(p => ({...p, link: e.target.value}))}
+                  placeholder="https://t.me/sponsor-kanal" required={banner.isActive}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                />
+              </div>
+
+              {banner.imageUrl && (
+                <div className="mt-4 p-4 border border-slate-200 rounded-xl bg-slate-50 text-center">
+                   <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Önizleme</p>
+                   <img src={banner.imageUrl} alt="preview" className="max-h-24 mx-auto object-contain" />
+                </div>
+              )}
+
+              {addError && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-200">{addError}</div>}
+
+              <button type="submit" disabled={addStatus === 'loading'} className="btn-primary w-full justify-center py-3 text-base shadow-md">
+                {addStatus === 'loading' ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
               </button>
             </form>
           )}
