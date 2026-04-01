@@ -53,7 +53,7 @@ export default async function HomePage() {
       <section className="bg-gradient-to-br from-slate-50 to-blue-50/50 border-b border-slate-200 overflow-hidden relative">
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-emerald-500" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 text-center relative z-10">
           <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/50 border border-blue-200 text-blue-700 text-[11px] font-bold uppercase tracking-wide">
               <ShieldCheck className="w-3.5 h-3.5" /> Doğrulanmış Kanallar
@@ -63,12 +63,12 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.15] mb-6 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-slate-900 leading-[1.15] mb-4 tracking-tight">
             Türkiye'nin En Güvenilir <br className="hidden sm:block" />
             <span className="text-blue-700">Telegram Kripto Kanalları</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
+          <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto mb-8 leading-relaxed font-medium">
             Gerçek kullanıcıların oyladığı, şeffaf metriklerle analiz edilmiş en iyi <strong className="text-slate-800 font-bold">Bitcoin sinyalleri</strong> ve altcoin haber gruplarını saniyeler içinde keşfedin. Bütün topluluklar uzman editörlerimiz tarafından her hafta denetlenmektedir.
           </p>
 
@@ -82,7 +82,7 @@ export default async function HomePage() {
           </div>
 
           {/* Core Trust Stats */}
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 mt-16 pb-4">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mt-8 pb-2">
             {[
               { label: 'Doğrulanan Grup', value: '1,500+' },
               { label: 'Aylık Ziyaret', value: '75,000+' },
@@ -137,25 +137,44 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* CATEGORIES GRID */}
-        <section>
-           <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popüler Kategoriler</h2>
-           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-             {categories.map((cat) => (
-               <Link
-                 key={cat.id}
-                 href={`/kategori/${cat.slug}`}
-                 className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:border-blue-400 hover:shadow-lg transition-all group flex flex-col items-center justify-center aspect-square"
-               >
-                 <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
-                   {cat.icon}
-                 </div>
-                 <div className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors line-clamp-1">{cat.name}</div>
-                 <div className="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">{cat.channel_count} kanal listeli</div>
-               </Link>
-             ))}
-           </div>
-        </section>
+        {/* CATEGORIES – Mobilde yatay scroll, Desktop'ta grid */}
+        <nav aria-label="Popüler Kategoriler">
+          <section>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-4">Popüler Kategoriler</h2>
+
+            {/* Mobil: yatay scroll chip'ler */}
+            <div className="flex lg:hidden gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/kategori/${cat.slug}`}
+                  className="flex-shrink-0 inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2.5 hover:border-blue-400 hover:shadow-md transition-all group"
+                >
+                  <span className="text-lg">{cat.icon}</span>
+                  <span className="font-bold text-sm text-slate-800 group-hover:text-blue-700 transition-colors whitespace-nowrap">{cat.name}</span>
+                  <span className="text-[10px] font-semibold text-slate-400 whitespace-nowrap">{cat.channel_count}</span>
+                </Link>
+              ))}
+            </div>
+
+            {/* Desktop: grid */}
+            <div className="hidden lg:grid grid-cols-5 gap-3">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/kategori/${cat.slug}`}
+                  className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:border-blue-400 hover:shadow-lg transition-all group flex flex-col items-center justify-center"
+                >
+                  <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform">
+                    {cat.icon}
+                  </div>
+                  <div className="font-bold text-sm text-slate-800 group-hover:text-blue-700 transition-colors line-clamp-1">{cat.name}</div>
+                  <div className="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">{cat.channel_count} kanal</div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </nav>
 
         {/* TWO COLUMN: TRENDING vs NEWEST */}
         <div className="grid lg:grid-cols-2 gap-12">

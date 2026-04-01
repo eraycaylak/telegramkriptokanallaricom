@@ -6,6 +6,7 @@ import Link from 'next/link'
 import ChannelCard from '@/components/ChannelCard'
 import { Eye, Users, ChevronRight, ArrowLeft, Crown, Star, Globe, Tag, Calendar, ShieldCheck, HeartPulse, MessageSquareQuote, CheckCircle2 } from 'lucide-react'
 import VoteButton from '@/components/VoteButton'
+import ReviewForm from '@/components/ReviewForm'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -75,8 +76,17 @@ export default async function KanalDetayPage({ params }: Props) {
     aggregateRating: ch.votes > 0 ? {
       '@type': 'AggregateRating',
       ratingValue: Math.min(5, 3 + ch.votes / 100).toFixed(1),
-      reviewCount: ch.votes,
+      reviewCount: Math.max(ch.votes, reviews.length),
+      bestRating: 5,
+      worstRating: 1,
     } : undefined,
+    review: reviews.slice(0, 3).map((rv: any) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: rv.user_name || 'Anonim' },
+      reviewRating: { '@type': 'Rating', ratingValue: rv.rating, bestRating: 5, worstRating: 1 },
+      reviewBody: rv.comment,
+      datePublished: rv.created_at,
+    })),
   }
 
   const breadcrumbSchema = {
@@ -253,27 +263,32 @@ export default async function KanalDetayPage({ params }: Props) {
         </div>
 
         <div className="space-y-4">
-          {reviews.length > 0 ? (
-            reviews.map((rv) => (
+          {reviews.length > 0 && (
+            reviews.map((rv: any) => (
               <div key={rv.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
                 <div className="flex justify-between items-start mb-3">
                   <span className="font-bold text-slate-900 flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">{(rv.user_name as string)[0].toUpperCase()}</div>
-                    {rv.user_name}
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">{(rv.user_name || 'A')[0].toUpperCase()}</div>
+                    {rv.user_name || 'Anonim'}
                   </span>
-                  <span className="text-xs text-slate-500 font-medium">{new Date(rv.created_at).toLocaleDateString('tr-TR')}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className={`w-3 h-3 ${s <= (rv.rating || 0) ? 'text-amber-400 fill-amber-400' : 'text-slate-300'}`} />
+                      ))}
+                    </div>
+                    <span className="text-xs text-slate-500 font-medium">{new Date(rv.created_at).toLocaleDateString('tr-TR')}</span>
+                  </div>
                 </div>
                 <p className="text-slate-600 text-sm leading-relaxed">{rv.comment}</p>
               </div>
             ))
-          ) : (
-            <div className="text-center py-10 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
-              <MessageSquareQuote className="w-10 h-10 text-slate-700 mx-auto mb-3" />
-              <h3 className="text-slate-900 font-bold mb-1">Henüz Yorum Yapılmamış</h3>
-              <p className="text-slate-500 text-sm">İlk deneyimi siz paylaşın ve topluluğumuza rehberlik edin.</p>
-              <button className="mt-4 btn-secondary py-2 px-6 text-sm">Yorum Yap</button>
-            </div>
           )}
+        </div>
+
+        {/* Yorum Formu */}
+        <div className="mt-8">
+          <ReviewForm channelId={ch.id} channelName={ch.name} />
         </div>
       </div>
 
