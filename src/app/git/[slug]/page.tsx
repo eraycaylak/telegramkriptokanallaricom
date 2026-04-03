@@ -32,7 +32,7 @@ export default async function RedirectPage({ params }: Props) {
         
         <div className="w-20 h-20 rounded-2xl bg-slate-50 text-blue-600 flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
           {data.logo_url ? (
-            <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover rounded-2xl" />
+            <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover rounded-2xl" referrerPolicy="no-referrer" />
           ) : (
             <ExternalLink className="w-8 h-8 text-blue-500" />
           )}

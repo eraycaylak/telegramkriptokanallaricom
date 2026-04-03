@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**.supabase.co' },
       { protocol: 'https', hostname: '**.telegram.org' },
       { protocol: 'https', hostname: 't.me' },
+      { protocol: 'https', hostname: '**.telesco.pe' },
     ],
   },
   async headers() {
@@ -15,7 +16,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Referrer-Policy', value: 'no-referrer-when-downgrade' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },

@@ -129,7 +129,7 @@ export default async function KanalDetayPage({ params }: Props) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 text-center sm:text-left">
           <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${avatarColor} flex items-center justify-center text-2xl sm:text-3xl font-black text-white flex-shrink-0 shadow-md border border-[var(--border-default)] overflow-hidden`}>
-            {ch.logo_url ? <img src={ch.logo_url} alt={ch.name} className="w-full h-full object-cover" /> : initials}
+            {ch.logo_url ? <img src={ch.logo_url} alt={ch.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : initials}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3 mb-2">

@@ -138,17 +138,17 @@ export default async function HomePage() {
           <section>
             <h2 className="text-lg sm:text-xl font-extrabold text-[var(--text-primary)] mb-4">Popüler Kategoriler</h2>
 
-            {/* Mobile: scroll chips */}
-            <div className="flex lg:hidden gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
+            {/* Mobile: 3-col grid showing all categories */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:hidden gap-2">
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/kategori/${cat.slug}`}
-                  className="flex-shrink-0 inline-flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-full px-4 py-2.5 hover:border-[var(--brand-primary)] hover:shadow-md transition-all group"
+                  className="flex flex-col items-center gap-1 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl px-2 py-3 hover:border-[var(--brand-primary)] hover:shadow-md transition-all group text-center"
                 >
-                  <span className="text-lg">{cat.icon}</span>
-                  <span className="font-bold text-sm text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors whitespace-nowrap">{cat.name}</span>
-                  <span className="text-[10px] font-semibold text-[var(--text-muted)] whitespace-nowrap">{cat.channel_count}</span>
+                  <span className="text-xl">{cat.icon}</span>
+                  <span className="font-bold text-[11px] text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors line-clamp-1 w-full">{cat.name}</span>
+                  <span className="text-[9px] font-semibold text-[var(--text-muted)]">{cat.channel_count} kanal</span>
                 </Link>
               ))}
             </div>
