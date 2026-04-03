@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { CheckCircle, XCircle, Trash2, Eye, Users, TrendingUp, BookOpen, RefreshCw, PenTool, LogOut, Plus, ThumbsUp } from 'lucide-react'
 import { Channel, Blog, Profile } from '@/lib/types'
 
-type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle' | 'reklamlar'
+type Tab = 'kanallar' | 'bekleyenler' | 'bloglar' | 'kullanicilar' | 'hizliekle' | 'reklamlar' | 'coktiklanan'
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('bekleyenler')
@@ -188,10 +188,24 @@ export default function AdminPage() {
     }
   }
 
+  const togglePromoted = async (id: string, current: boolean) => {
+    await supabase.from('channels').update({ is_promoted: !current }).eq('id', id)
+    fetchData()
+  }
+
+  const updatePromotedOrder = async (id: string) => {
+    const val = prompt('Sıralama numarası girin (küçük = üstte):')
+    if (val === null) return
+    const order = parseInt(val, 10) || 0
+    await supabase.from('channels').update({ promoted_order: order }).eq('id', id)
+    fetchData()
+  }
+
   const tabs: { key: Tab; label: string; count?: number }[] = [
     { key: 'bekleyenler', label: '⏳ Onay Bekleyenler', count: stats.pending },
     { key: 'kanallar', label: '📡 Aktif Kanallar', count: stats.total },
-    { key: 'reklamlar', label: '📢 Reklam Afişi' },
+    { key: 'coktiklanan', label: '🎯 Çok Tıklananlar' },
+    { key: 'reklamlar', label: '📢 Reklam Yönetimi' },
     { key: 'hizliekle', label: '⚡ Hızlı Ekle' },
     { key: 'bloglar', label: '📝 Blog Yazıları', count: stats.blogs },
     { key: 'kullanicilar', label: '👤 Kullanıcılar', count: stats.users },
@@ -458,6 +472,43 @@ export default function AdminPage() {
               {blogs.length === 0 && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm"><p className="text-slate-500 text-sm font-medium">Henüz blog yazısı yok.</p></div>
               )}
+            </div>
+          )}
+
+          {/* Çok Tıklananlar Tab */}
+          {tab === 'coktiklanan' && (
+            <div className="space-y-3">
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-4">
+                <h2 className="text-xl font-black text-slate-900 mb-2">🎯 Çok Tıklananlar Yönetimi</h2>
+                <p className="text-slate-500 text-sm">Ana sayfada "Çok Tıklananlar" bölümünde gösterilecek kanalları yönetin. Promoted olan kanallar 2x2 grid formatında görüntülenir.</p>
+              </div>
+              {channels.filter((ch: any) => ch.is_promoted).length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-bold text-emerald-600 mb-2">✅ Aktif Promoted Kanallar</h3>
+                  {channels.filter((ch: any) => ch.is_promoted).sort((a: any, b: any) => (a.promoted_order || 0) - (b.promoted_order || 0)).map((ch: any) => (
+                    <div key={ch.id} className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between gap-3 mb-2">
+                      <div className="flex-1">
+                        <p className="font-bold text-slate-900 text-sm">{ch.name}</p>
+                        <p className="text-xs text-slate-500">Sıra: {ch.promoted_order || 0} | Oy: {ch.votes} | Görüntülenme: {ch.views}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => updatePromotedOrder(ch.id)} className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">Sıra Değiştir</button>
+                        <button onClick={() => togglePromoted(ch.id, true)} className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-200">Kaldır</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <h3 className="text-sm font-bold text-slate-700 mb-2">Tüm Kanallar (Promoted yapmak için tıklayın)</h3>
+              {channels.filter((ch: any) => !ch.is_promoted).map((ch: any) => (
+                <div key={ch.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3 shadow-sm hover:border-blue-300 transition-colors">
+                  <div className="flex-1">
+                    <p className="font-bold text-slate-900 text-sm">{ch.name}</p>
+                    <p className="text-xs text-slate-500">Oy: {ch.votes} | Görüntülenme: {ch.views}</p>
+                  </div>
+                  <button onClick={() => togglePromoted(ch.id, false)} className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 hover:bg-emerald-100">🎯 Promote Et</button>
+                </div>
+              ))}
             </div>
           )}
 

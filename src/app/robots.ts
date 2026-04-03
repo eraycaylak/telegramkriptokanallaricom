@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/', '/giris', '/kayit'],
+        disallow: ['/admin', '/api/', '/giris', '/kayit', '/git/', '/dashboard'],
       },
     ],
     sitemap: 'https://www.telegramkriptokanallari.com/sitemap.xml',
