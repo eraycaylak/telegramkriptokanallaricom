@@ -9,101 +9,155 @@ interface ChannelCardProps {
   variant?: 'list' | 'grid'
 }
 
+/*
+ * Mobilde overflow sorunu:
+ * - Kart max-width:100% ve overflow:hidden
+ * - İç yapı: [rank?] [logo] [content] [buton]
+ * - content: flex-1 + min-w-0 + overflow-hidden (zorunlu)
+ * - Tüm text elemanları: truncate (CSS değil, inline style)
+ */
 export default function ChannelCard({ channel, rank, variant = 'list' }: ChannelCardProps) {
   const initials = channel.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+  const colors = ['#2563eb', '#059669', '#7c3aed', '#0891b2', '#e11d48']
+  const avatarBg = colors[channel.name.charCodeAt(0) % colors.length]
 
-  const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-cyan-600', 'bg-rose-600']
-  const avatarColor = colors[channel.name.charCodeAt(0) % colors.length]
-
-  // GRID variant
   if (variant === 'grid') {
     return (
-      <div className="premium-card p-3 sm:p-4 flex flex-col items-center text-center group" style={{ overflow: 'hidden' }}>
-        <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl ${avatarColor} flex items-center justify-center font-bold text-white text-xs sm:text-sm shadow-md border border-[var(--border-default)] mb-2 sm:mb-3 group-hover:scale-105 transition-transform flex-shrink-0`} style={{ overflow: 'hidden' }}>
+      <div
+        style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-default)',
+          borderRadius: '12px',
+          padding: '12px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          overflow: 'hidden',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div
+          style={{
+            width: 48, height: 48, borderRadius: 12,
+            backgroundColor: avatarBg,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontWeight: 700, fontSize: 12,
+            overflow: 'hidden', flexShrink: 0, marginBottom: 8,
+          }}
+        >
           {channel.logo_url ? (
-            <img src={channel.logo_url} alt={channel.name} className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
-          ) : (
-            initials
-          )}
+            <img src={channel.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" referrerPolicy="no-referrer" />
+          ) : initials}
         </div>
-        <Link href={`/kanal/${channel.slug}`} className="font-bold text-xs sm:text-sm text-[var(--text-primary)] hover:text-[var(--brand-primary)] transition-colors mb-1 w-full" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+        <Link href={`/kanal/${channel.slug}`} style={{ fontWeight: 700, fontSize: 12, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%', display: 'block', textDecoration: 'none', marginBottom: 4 }}>
           {channel.name}
         </Link>
         {channel.categories && (
-          <span className="text-[9px] sm:text-[10px] font-semibold text-[var(--text-muted)] mb-2 w-full" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+          <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%', display: 'block' }}>
             {channel.categories.icon} {channel.categories.name}
           </span>
         )}
-        <div className="flex items-center gap-2 text-[9px] sm:text-[10px] text-[var(--text-muted)] mb-2 sm:mb-3 font-medium">
-          <span className="flex items-center gap-0.5"><Users className="w-2.5 h-2.5 sm:w-3 sm:h-3" />{channel.member_count && channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count || '—'}</span>
-          <span className="flex items-center gap-0.5"><Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />{channel.views > 1000 ? `${(channel.views/1000).toFixed(1)}k` : channel.views}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: 'var(--text-muted)', marginBottom: 8 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}><Users style={{ width: 10, height: 10 }} />{channel.member_count && channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count || '—'}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}><Eye style={{ width: 10, height: 10 }} />{channel.views > 1000 ? `${(channel.views/1000).toFixed(1)}k` : channel.views}</span>
         </div>
-        <Link href={`/git/${channel.slug}`} className="btn-primary py-1.5 px-3 text-[10px] sm:text-xs font-bold w-full justify-center">
+        <Link href={`/git/${channel.slug}`} style={{ background: 'var(--brand-primary)', color: '#fff', padding: '6px 12px', borderRadius: 8, fontSize: 10, fontWeight: 700, textDecoration: 'none', width: '100%', textAlign: 'center', display: 'block' }}>
           Katıl
         </Link>
       </div>
     )
   }
 
-  // LIST variant
+  // LIST variant — tüm stiller inline, Tailwind/CSS override yok
   return (
-    <div className="premium-card p-3 sm:p-4 flex flex-row items-center gap-2 sm:gap-3 group" style={{ overflow: 'hidden', maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        padding: '10px 12px',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 12,
+        overflow: 'hidden',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
       {/* Rank */}
       {rank && (
-        <div className={`stat-number text-xs sm:text-base font-black flex-shrink-0 ${rank <= 3 ? 'text-amber-500' : 'text-[var(--text-muted)]'}`} style={{ width: '20px', textAlign: 'center' }}>
+        <div style={{ fontWeight: 900, fontSize: 12, minWidth: 20, textAlign: 'center', flexShrink: 0, color: rank <= 3 ? '#f59e0b' : 'var(--text-muted)' }}>
           #{rank}
         </div>
       )}
 
       {/* Logo */}
-      <div className={`rounded-xl ${avatarColor} flex items-center justify-center flex-shrink-0 font-bold text-white text-[10px] sm:text-sm shadow-sm border border-[var(--border-default)]`} style={{ width: '36px', height: '36px', minWidth: '36px', overflow: 'hidden' }}>
+      <div style={{ width: 36, height: 36, minWidth: 36, borderRadius: 10, backgroundColor: avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, color: '#fff', fontWeight: 700, fontSize: 10 }}>
         {channel.logo_url ? (
-          <img src={channel.logo_url} alt={channel.name} className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
-        ) : (
-          initials
-        )}
+          <img src={channel.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" referrerPolicy="no-referrer" />
+        ) : initials}
       </div>
 
-      {/* Content */}
+      {/* Content — MUST have min-width:0 to truncate in flex */}
       <div style={{ flex: '1 1 0%', minWidth: 0, overflow: 'hidden' }}>
-        {/* Name row */}
-        <div className="flex items-center gap-1" style={{ minWidth: 0, overflow: 'hidden' }}>
-          <Link href={`/kanal/${channel.slug}`} className="font-extrabold text-xs sm:text-base text-[var(--text-primary)] hover:text-[var(--brand-primary)] transition-colors" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: '1 1 0%' }}>
+        {/* Name */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
+          <Link
+            href={`/kanal/${channel.slug}`}
+            style={{
+              fontWeight: 800,
+              fontSize: 13,
+              color: 'var(--text-primary)',
+              textDecoration: 'none',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: '1 1 0%',
+              minWidth: 0,
+            }}
+          >
             {channel.name}
           </Link>
-          {channel.is_verified && (
-            <ShieldCheck className="w-3 h-3 text-[var(--brand-primary)] flex-shrink-0" />
-          )}
-          {channel.is_premium && (
-            <span className="badge badge-premium text-[8px] flex-shrink-0">PRO</span>
-          )}
+          {channel.is_verified && <ShieldCheck style={{ width: 12, height: 12, flexShrink: 0, color: 'var(--brand-primary)' }} />}
         </div>
 
         {/* Description */}
-        <p className="text-[10px] sm:text-xs text-[var(--text-muted)] mt-0.5 leading-snug" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
           {channel.description}
         </p>
 
         {/* Stats */}
-        <div className="flex items-center gap-2 text-[9px] sm:text-[11px] text-[var(--text-muted)] mt-1 font-medium flex-wrap">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 9, color: 'var(--text-muted)', marginTop: 4, fontWeight: 500 }}>
           <VoteButton channelId={channel.id} initialVotes={channel.votes} />
-          {channel.member_count && (
-            <span className="flex items-center gap-0.5"><Users className="w-2.5 h-2.5 sm:w-3 sm:h-3" />{channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count}</span>
-          )}
-          <span className="hidden sm:flex items-center gap-0.5"><Eye className="w-3 h-3" />{channel.views > 1000 ? `${(channel.views/1000).toFixed(1)}k` : channel.views}</span>
-          {channel.trust_score > 0 && (
-            <span className="hidden sm:flex items-center gap-0.5 font-bold text-emerald-500"><HeartPulse className="w-3 h-3" />{channel.trust_score}</span>
-          )}
+          {channel.member_count ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}><Users style={{ width: 10, height: 10 }} />{channel.member_count >= 1000 ? `${(channel.member_count/1000).toFixed(1)}k` : channel.member_count}</span>
+          ) : null}
         </div>
       </div>
 
-      {/* CTA Button */}
+      {/* Katıl Button — flex-shrink-0, her zaman görünür */}
       <Link
         href={`/git/${channel.slug}`}
-        className="btn-primary py-1.5 px-2.5 sm:px-4 text-[10px] sm:text-sm font-bold flex items-center justify-center gap-0.5 shadow-sm flex-shrink-0"
-        style={{ whiteSpace: 'nowrap' }}
+        style={{
+          background: 'var(--brand-primary)',
+          color: '#fff',
+          padding: '6px 10px',
+          borderRadius: 8,
+          fontSize: 10,
+          fontWeight: 700,
+          textDecoration: 'none',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+        }}
       >
-        Katıl <ChevronRight className="w-3 h-3 hidden sm:block" />
+        Katıl
       </Link>
     </div>
   )
