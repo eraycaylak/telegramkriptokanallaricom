@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: ch.meta_title || `${ch.name} | Telegram Kripto Kanalı İncelemesi`,
     description: ch.meta_description || ch.description || `${ch.name} telegram kanalı yorumları, güven skoru ve analiz detayları.`,
-    openGraph: { title: ch.name, description: ch.description ?? '', type: 'website', url: `/kanal/${ch.slug}` },
-    alternates: { canonical: `/kanal/${ch.slug}` },
+    openGraph: { title: ch.name, description: ch.description ?? '', type: 'website', url: `https://www.telegramkriptokanallari.com/kanal/${ch.slug}`, images: ch.logo_url ? [{ url: ch.logo_url, width: 400, height: 400, alt: ch.name }] : [] },
+    alternates: { canonical: `https://www.telegramkriptokanallari.com/kanal/${ch.slug}` },
   }
 }
 

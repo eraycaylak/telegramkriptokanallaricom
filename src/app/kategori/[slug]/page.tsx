@@ -9,6 +9,8 @@ import Link from 'next/link'
 
 interface Props { params: Promise<{ slug: string }> }
 
+const BASE_URL = 'https://www.telegramkriptokanallari.com'
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const supabase = await createClient()
@@ -18,7 +20,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${cat.name} Telegram Kanalları | En İyi ${cat.name} Kanalları 2026`,
     description: `${cat.name} kategorisindeki en iyi Telegram kripto kanalları. Güvenilir ${cat.name.toLowerCase()} kanallarını keşfet. ${cat.description ?? ''}`,
-    alternates: { canonical: `/kategori/${cat.slug}` },
+    keywords: [`${cat.name.toLowerCase()} telegram kanalları`, `telegram ${cat.name.toLowerCase()}`, `kripto ${cat.name.toLowerCase()} grupları`],
+    openGraph: {
+      title: `${cat.name} Telegram Kanalları | En İyi ${cat.name} Kanalları 2026`,
+      description: `${cat.name} kategorisindeki en iyi Telegram kripto kanalları. Güvenilir ${cat.name.toLowerCase()} kanallarını keşfet.`,
+      url: `${BASE_URL}/kategori/${cat.slug}`,
+      type: 'website',
+    },
+    alternates: { canonical: `${BASE_URL}/kategori/${cat.slug}` },
   }
 }
 
@@ -37,17 +46,42 @@ export default async function KategoriPage({ params }: Props) {
     .order('votes', { ascending: false })
   const typedChannels = (channels ?? []) as ChannelWithCategory[]
 
-  const schemaData = {
+  const collectionPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `${cat.name} Telegram Kripto Kanalları`,
     description: cat.description,
-    url: `https://www.telegramkriptokanallari.com/kategori/${cat.slug}`,
+    url: `${BASE_URL}/kategori/${cat.slug}`,
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: BASE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Kategoriler', item: `${BASE_URL}/kategoriler` },
+        { '@type': 'ListItem', position: 3, name: cat.name },
+      ],
+    },
   }
+
+  const itemListSchema = typedChannels.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${cat.name} Telegram Kripto Kanalları Listesi`,
+    description: `En iyi ${cat.name.toLowerCase()} Telegram kanalları`,
+    numberOfItems: typedChannels.length,
+    itemListElement: typedChannels.slice(0, 20).map((ch, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${BASE_URL}/kanal/${ch.slug}`,
+      name: ch.name,
+    })),
+  } : null
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }} />
+      {itemListSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
+      )}
 
       <BreadcrumbNav items={[
         { label: 'Ana Sayfa', href: '/' },
@@ -66,7 +100,8 @@ export default async function KategoriPage({ params }: Props) {
       {/* SEO Content Block */}
       <div className="premium-card p-6 mb-6">
         <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-medium">
-          {cat.name} kategorisindeki en güvenilir Telegram kripto kanallarını keşfedin. Bu kanallar,{' '}
+          {cat.name} kategorisindeki en güvenilir <strong className="text-[var(--text-primary)]">Telegram kripto kanallarını</strong> keşfedin.
+          {' '}En iyi <strong className="text-[var(--text-primary)]">kripto telegram grupları</strong> arasından seçilen bu kanallar,{' '}
           {cat.name.toLowerCase()} alanında uzmanlaşmış ve topluluğumuzun güven skorlarıyla derecelendirilmiş kaliteli grupları içerir.{' '}
           Tüm kanallar editör kadromuz tarafından doğrulanmıştır.
         </p>
@@ -100,3 +135,4 @@ export default async function KategoriPage({ params }: Props) {
     </div>
   )
 }
+

@@ -3,9 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Blog } from '@/lib/types'
 import Link from 'next/link'
+import BreadcrumbNav from '@/components/BreadcrumbNav'
 import { ArrowLeft, Calendar, Eye, Tag } from 'lucide-react'
 
 interface Props { params: Promise<{ slug: string }> }
+
+const BASE_URL = 'https://www.telegramkriptokanallari.com'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -16,8 +19,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: blog.seo_title ?? blog.title,
     description: blog.seo_description ?? blog.excerpt ?? '',
-    openGraph: { title: blog.title, description: blog.excerpt ?? '', type: 'article', publishedTime: blog.published_at ?? undefined },
-    alternates: { canonical: `/blog/${blog.slug}` },
+    openGraph: {
+      title: blog.seo_title ?? blog.title,
+      description: blog.seo_description ?? blog.excerpt ?? '',
+      type: 'article',
+      url: `${BASE_URL}/blog/${blog.slug}`,
+      publishedTime: blog.published_at ?? undefined,
+      modifiedTime: blog.updated_at ?? undefined,
+      images: blog.cover_image ? [{ url: blog.cover_image, alt: blog.title }] : [],
+    },
+    alternates: { canonical: `${BASE_URL}/blog/${blog.slug}` },
   }
 }
 
@@ -35,26 +46,33 @@ export default async function BlogDetayPage({ params }: Props) {
     description: blog.excerpt,
     datePublished: blog.published_at,
     dateModified: blog.updated_at,
-    author: { '@type': 'Person', name: 'TelegramKriptoKanallari.com', url: 'https://www.telegramkriptokanallari.com' },
-    publisher: { '@type': 'Organization', name: 'Telegram Kripto Kanalları', url: 'https://www.telegramkriptokanallari.com' },
+    image: blog.cover_image ?? undefined,
+    url: `${BASE_URL}/blog/${blog.slug}`,
+    author: { '@type': 'Organization', name: 'TelegramKriptoKanallari.com', url: BASE_URL },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Telegram Kripto Kanalları',
+      url: BASE_URL,
+      logo: { '@type': 'ImageObject', url: `${BASE_URL}/favicon.ico` },
+    },
+    keywords: blog.tags?.join(', '),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${blog.slug}` },
   }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
-      <nav className="flex items-center gap-2 text-xs text-slate-600 mb-6">
-        <Link href="/" className="hover:text-slate-500">Ana Sayfa</Link>
-        <span>/</span>
-        <Link href="/blog" className="hover:text-slate-500">Blog</Link>
-        <span>/</span>
-        <span className="text-slate-500 truncate max-w-[200px]">{blog.title}</span>
-      </nav>
+      <BreadcrumbNav items={[
+        { label: 'Ana Sayfa', href: '/' },
+        { label: 'Blog', href: '/blog' },
+        { label: blog.title },
+      ]} />
 
       <article>
         <header className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight mb-4">{blog.title}</h1>
-          <div className="flex items-center gap-4 text-xs text-slate-600">
+          <h1 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] leading-tight mb-4">{blog.title}</h1>
+          <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
             {blog.published_at && (
               <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{new Date(blog.published_at).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
             )}
@@ -74,13 +92,13 @@ export default async function BlogDetayPage({ params }: Props) {
         )}
 
         <div
-          className="prose prose-invert prose-sm max-w-none text-slate-500 leading-relaxed [&>h2]:text-slate-800 [&>h2]:font-bold [&>h3]:text-slate-700 [&>h3]:font-semibold [&>strong]:text-slate-700 [&>p]:mb-4 [&>ul]:pl-4 [&>ul>li]:text-slate-500 [&>h2]:mt-6 [&>h2]:mb-3 [&>h3]:mt-4 [&>h3]:mb-2"
+          className="prose prose-invert prose-sm max-w-none text-[var(--text-secondary)] leading-relaxed [&>h2]:text-[var(--text-primary)] [&>h2]:font-bold [&>h3]:text-[var(--text-primary)] [&>h3]:font-semibold [&>strong]:text-[var(--text-primary)] [&>p]:mb-4 [&>ul]:pl-4 [&>ul>li]:text-[var(--text-secondary)] [&>h2]:mt-6 [&>h2]:mb-3 [&>h3]:mt-4 [&>h3]:mb-2"
           dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br />') }}
         />
       </article>
 
-      <div className="border-t border-white/5 mt-10 pt-6">
-        <Link href="/blog" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+      <div className="border-t border-[var(--border-default)] mt-10 pt-6">
+        <Link href="/blog" className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors font-semibold">
           <ArrowLeft className="w-4 h-4" /> Blog&apos;a dön
         </Link>
       </div>

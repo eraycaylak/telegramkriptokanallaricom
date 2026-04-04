@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: '%s | Telegram Kripto Kanalları',
   },
   description: 'Türkiye\'nin en kapsamlı Telegram kripto kanalları dizini. En iyi Bitcoin, Ethereum sinyal kanalları, ücretsiz kripto haberler ve DeFi kanallarını keşfet.',
-  keywords: ['telegram kripto kanalları', 'en iyi telegram kripto kanalları', 'telegram sinyal kanalları', 'ücretsiz telegram kripto', 'türk telegram kripto', 'bitcoin sinyal kanalı', 'kripto para telegram', 'telegram kripto sinyalleri', 'kripto kanal önerileri'],
+  keywords: ['telegram kripto kanalları', 'kripto telegram grupları', 'telegram kripto sohbet', 'en iyi telegram kripto kanalları', 'telegram sinyal kanalları', 'ücretsiz telegram kripto', 'türk telegram kripto', 'bitcoin sinyal kanalı', 'kripto para telegram', 'telegram kripto sinyalleri', 'kripto kanal önerileri', 'kripto telegram', 'telegram bitcoin grupları', 'bitcoin telegram kanalı'],
   authors: [{ name: 'Telegram Kripto Kanalları' }],
   creator: 'Telegram Kripto Kanalları',
   openGraph: {

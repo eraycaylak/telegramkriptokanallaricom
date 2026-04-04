@@ -16,16 +16,22 @@ async function getData() {
     supabase.from('channels').select('*, categories(*)').eq('is_approved', true).order('trending_score', { ascending: false, nullsFirst: false }).order('votes', { ascending: false }).limit(10),
     supabase.from('categories').select('*').order('channel_count', { ascending: false }),
   ])
+  // Fallback stats from direct queries if rpc not available
+  const channelCount = featuredRes.data ? (await supabase.from('channels').select('id', { count: 'exact', head: true }).eq('is_approved', true)).count ?? 0 : 0
+  const blogCount = (await supabase.from('blogs').select('id', { count: 'exact', head: true }).eq('is_published', true)).count ?? 0
+  const reviewCount = (await supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('is_approved', true)).count ?? 0
   return {
     featured: (featuredRes.data ?? []) as ChannelWithCategory[],
     newest: (newRes.data ?? []) as ChannelWithCategory[],
     trending: (trendingRes.data ?? []) as ChannelWithCategory[],
     categories: (categoriesRes.data ?? []) as Category[],
+    stats: { channelCount, blogCount, reviewCount },
   }
 }
 
+
 export default async function HomePage() {
-  const { featured, newest, trending, categories } = await getData()
+  const { featured, newest, trending, categories, stats } = await getData()
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -73,7 +79,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-base sm:text-lg text-blue-100/80 max-w-3xl mx-auto mb-8 leading-relaxed font-medium animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-            Gerçek kullanıcıların oyladığı, şeffaf metriklerle analiz edilmiş en iyi <strong className="text-white font-bold">Bitcoin sinyalleri</strong> ve altcoin haber gruplarını saniyeler içinde keşfedin.
+            Gerçek kullanıcıların oyladığı <strong className="text-white font-bold">telegram kripto kanalları</strong> ve <strong className="text-white font-bold">kripto telegram grupları</strong> arasından en iyilerini şeffaf metriklerle keşfedin.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
@@ -85,13 +91,13 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Stats — real data from DB */}
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 mt-10 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
             {[
-              { label: 'Doğrulanan Grup', value: '1,500+' },
-              { label: 'Aylık Ziyaret', value: '75K+' },
-              { label: 'Gerçek İnceleme', value: '25K+' },
-              { label: 'Toplam Üye', value: '2M+' },
+              { label: 'Doğrulanan Kanal', value: `${stats.channelCount}+` },
+              { label: 'Blog Yazısı', value: `${stats.blogCount}+` },
+              { label: 'Kullanıcı Yorumu', value: `${stats.reviewCount}+` },
+              { label: 'Kategori', value: `${categories.length}` },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="stat-number text-2xl sm:text-3xl font-black text-white">{stat.value}</div>
@@ -251,10 +257,10 @@ export default async function HomePage() {
           <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-6">En İyi Telegram Kripto Kanalları 2026</h2>
           <div className="space-y-4 text-[var(--text-secondary)] leading-relaxed text-sm sm:text-base font-medium">
             <p>
-              Kripto para endüstrisi hızla değişirken, anlık fiyat hareketlerini ve son dakika Bitcoin sinyallerini saniyeler içerisinde elde edebilmeniz ancak <strong className="text-[var(--text-primary)] font-bold">Telegram kripto kanalları</strong> ile mümkündür. Doğru bir Telegram kanalını takip etmek portföyünüzün büyümesini kolaylaştırırken, botlu scam kanalları ise sizi likidite noktasına iter.
+              Kripto para endüstrisi hızla değişirken, anlık fiyat hareketlerini ve son dakika Bitcoin sinyallerini saniyeler içerisinde elde edebilmeniz ancak <strong className="text-[var(--text-primary)] font-bold">telegram kripto kanalları</strong> ile mümkündür. Doğru bir <strong className="text-[var(--text-primary)] font-bold">kripto telegram grubu</strong> takip etmek portföyünüzün büyümesini kolaylaştırırken, botlu scam kanalları ise sizi likidite noktasına iter.
             </p>
             <p>
-              Listemizde yer alan tüm grupları editörlerimiz incelemiş ve <strong className="text-[var(--text-primary)] font-bold">Güven Skoru (Trust Score)</strong> metriklerine tabi tutmuştur. Bu skor; kanalın geçmiş sinyal başarı oranına, üye etkileşimine ve topluluğumuzun geri bildirimlerine dayanır.
+              <strong className="text-[var(--text-primary)] font-bold">Telegram kripto sohbet</strong> gruplarında aktif olan yatırımcılar piyasanın nabzını anlık takip eder. Listemizde yer alan tüm grupları editörlerimiz incelemiş ve <strong className="text-[var(--text-primary)] font-bold">Güven Skoru (Trust Score)</strong> metriklerine tabi tutmuştur. Bu skor; kanalın geçmiş sinyal başarı oranına, üye etkileşimine ve topluluğumuzun geri bildirimlerine dayanır.
             </p>
           </div>
 

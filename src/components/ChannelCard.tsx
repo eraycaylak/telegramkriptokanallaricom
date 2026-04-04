@@ -76,7 +76,7 @@ export default function ChannelCard({ channel, rank, variant = 'list' }: Channel
       style={{
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 8,
         padding: '10px 12px',
         background: 'var(--bg-card)',
@@ -96,7 +96,7 @@ export default function ChannelCard({ channel, rank, variant = 'list' }: Channel
       )}
 
       {/* Logo */}
-      <div style={{ width: 36, height: 36, minWidth: 36, borderRadius: 10, backgroundColor: avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, color: '#fff', fontWeight: 700, fontSize: 10 }}>
+      <div style={{ width: 36, height: 36, minWidth: 36, borderRadius: 10, backgroundColor: avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, color: '#fff', fontWeight: 700, fontSize: 10, marginTop: 2 }}>
         {channel.logo_url ? (
           <img src={channel.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" referrerPolicy="no-referrer" />
         ) : initials}
@@ -125,8 +125,8 @@ export default function ChannelCard({ channel, rank, variant = 'list' }: Channel
           {channel.is_verified && <ShieldCheck style={{ width: 12, height: 12, flexShrink: 0, color: 'var(--brand-primary)' }} />}
         </div>
 
-        {/* Description */}
-        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
+        {/* Description — 2 satır, sonra ... */}
+        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, lineHeight: 1.4, wordBreak: 'break-word' as const }}>
           {channel.description}
         </p>
 

@@ -8,9 +8,15 @@ import BreadcrumbNav from '@/components/BreadcrumbNav'
 import { BookOpen, Calendar, Eye, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Blog | Telegram Kripto Rehberleri',
-  description: 'Telegram kripto kanalları rehberleri, sinyal kanalı incelemeleri ve kripto para yatırım ipuçları. En kapsamlı kripto blog içerikleri.',
-  alternates: { canonical: '/blog' },
+  title: 'Kripto Blog | Telegram Kripto Kanalları Rehberleri',
+  description: 'Telegram kripto kanalları rehberleri, kripto telegram grupları incelemeleri ve kripto para yatırım ipuçları. En kapsamlı kripto blog içerikleri.',
+  alternates: { canonical: 'https://www.telegramkriptokanallari.com/blog' },
+  openGraph: {
+    title: 'Kripto Blog | Telegram Kripto Kanalları Rehberleri',
+    description: 'Telegram kripto kanalları rehberleri, kripto telegram grupları incelemeleri ve kripto para yatırım ipuçları.',
+    url: 'https://www.telegramkriptokanallari.com/blog',
+    type: 'website',
+  },
 }
 
 export default async function BlogPage() {
