@@ -16,8 +16,8 @@ async function getData() {
     supabase.from('channels').select('*, categories(*)').eq('is_approved', true).order('trending_score', { ascending: false, nullsFirst: false }).order('votes', { ascending: false }).limit(10),
     supabase.from('categories').select('*').order('channel_count', { ascending: false }),
   ])
-  // Fallback stats from direct queries if rpc not available
-  const channelCount = featuredRes.data ? (await supabase.from('channels').select('id', { count: 'exact', head: true }).eq('is_approved', true)).count ?? 0 : 0
+  // Live DB stats — updates automatically as channels/blogs/reviews are added
+  const channelCount = (await supabase.from('channels').select('id', { count: 'exact', head: true }).eq('is_approved', true)).count ?? 0
   const blogCount = (await supabase.from('blogs').select('id', { count: 'exact', head: true }).eq('is_published', true)).count ?? 0
   const reviewCount = (await supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('is_approved', true)).count ?? 0
   return {
